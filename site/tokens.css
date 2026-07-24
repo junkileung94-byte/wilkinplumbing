@@ -1,0 +1,44 @@
+/* Hallmark tokens · Wilkin Plumbing · custom/tuned "heavy glass"
+ * paper oklch(97.5% 0.004 250) · accent oklch(69.3% 0.206 43) warm · Barlow Condensed + Geist
+ * axes: dark paper-band / display-condensed / warm+cool dual anchor
+ */
+:root{
+  /* brand */
+  --navy:        oklch(32.0% 0.128 260);
+  --navy-700:    oklch(28.0% 0.110 260);
+  --navy-900:    oklch(20.0% 0.070 262);
+  --navy-950:    oklch(14.0% 0.048 262);
+  --orange:      oklch(69.3% 0.206 43);
+  --orange-600:  oklch(63.0% 0.190 40);
+  --orange-300:  oklch(78.0% 0.150 46);
+
+  /* neutrals */
+  --paper:       oklch(97.5% 0.004 250);
+  --ink:         oklch(25.0% 0.050 262);
+  --ink-2:       oklch(42.0% 0.030 262);
+  --muted:       oklch(50.0% 0.020 258);
+  --white:       oklch(100% 0 0);
+
+  /* glass system */
+  --glass-dark:      rgba(255,255,255,0.09);
+  --glass-dark-2:    rgba(255,255,255,0.06);
+  --glass-light:     rgba(255,255,255,0.62);
+  --glass-light-2:   rgba(255,255,255,0.44);
+  --glass-navy:      rgba(6,20,54,0.42);
+  --glass-border:    rgba(255,255,255,0.20);
+  --glass-border-lt: rgba(255,255,255,0.55);
+  --glass-hi:        rgba(255,255,255,0.45);
+  --glass-blur:      18px;
+  --shadow-glass:    0 24px 60px -28px rgba(3,14,45,0.75);
+  --shadow-soft:     0 12px 30px -18px rgba(3,14,45,0.55);
+
+  --focus:           oklch(80% 0.17 46);
+
+  --font-display: "Barlow Condensed","Oswald",system-ui,sans-serif;
+  --font-body:    "Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
+
+  --ease-out: cubic-bezier(0.16,1,0.3,1);
+  --dur: 260ms;
+
+  --r-lg: 22px; --r-md: 16px; --r-sm: 12px; --r-pill: 999px;
+}

@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wilkin Plumbing · Reliable plumbing you can trust · Barrie &amp; Orillia</title>
+<meta name="description" content="Wilkin Plumbing. Roy, a licensed journeyman plumber with 20 years experience serving Barrie and Orillia. Residential and commercial. When you call me, you get me. Call 705 888 2651.">
+<link rel="icon" href="../brand/logo/wilkin-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+/* Hallmark · macrostructure: Photographic · tone: honest local trade, heavy glass · anchor hue: warm(orange)+cool(navy)
+ * pre-emit critique: P5 H4 E4 S5 R4 V4
+ * theme: custom/tuned "heavy glass" · paper oklch(97.5% 0.004 250) · accent oklch(69.3% 0.206 43) warm · Barlow Condensed + Geist
+ * contrast: navy ink on orange, white on dark glass, ink on light glass
+ */
+:root{
+  /* brand */
+  --navy:        oklch(32.0% 0.128 260);
+  --navy-700:    oklch(28.0% 0.110 260);
+  --navy-900:    oklch(20.0% 0.070 262);
+  --navy-950:    oklch(14.0% 0.048 262);
+  --orange:      oklch(69.3% 0.206 43);
+  --orange-600:  oklch(63.0% 0.190 40);
+  --orange-300:  oklch(78.0% 0.150 46);
+
+  /* neutrals */
+  --paper:       oklch(97.5% 0.004 250);
+  --ink:         oklch(25.0% 0.050 262);
+  --ink-2:       oklch(42.0% 0.030 262);
+  --muted:       oklch(50.0% 0.020 258);
+  --white:       oklch(100% 0 0);
+
+  /* glass system (translucent, layered over photo + navy field) */
+  --glass-dark:      rgba(255,255,255,0.09);
+  --glass-dark-2:    rgba(255,255,255,0.06);
+  --glass-light:     rgba(255,255,255,0.62);
+  --glass-light-2:   rgba(255,255,255,0.44);
+  --glass-navy:      rgba(6,20,54,0.42);
+  --glass-border:    rgba(255,255,255,0.20);
+  --glass-border-lt: rgba(255,255,255,0.55);
+  --glass-hi:        rgba(255,255,255,0.45);
+  --glass-blur:      18px;
+  --shadow-glass:    0 24px 60px -28px rgba(3,14,45,0.75);
+  --shadow-soft:     0 12px 30px -18px rgba(3,14,45,0.55);
+
+  --focus:           oklch(80% 0.17 46);
+
+  --font-display: "Barlow Condensed","Oswald",system-ui,sans-serif;
+  --font-body:    "Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
+
+  --ease-out: cubic-bezier(0.16,1,0.3,1);
+  --dur: 260ms;
+
+  --r-lg: 22px; --r-md: 16px; --r-sm: 12px; --r-pill: 999px;
+
+  --wrap: 1120px;
+  --pad: clamp(18px, 5vw, 40px);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:clip}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  background:var(--navy-950);
+}
+
+/* deep navy field with warm glows (base beneath every glass panel) */
+.field{
+  position:relative;
+  background:
+    radial-gradient(120% 80% at 85% -10%, oklch(69.3% 0.206 43 / 0.28), transparent 55%),
+    radial-gradient(90% 70% at -10% 20%, oklch(32% 0.128 260 / 0.55), transparent 60%),
+    linear-gradient(180deg, var(--navy-950), var(--navy-900) 40%, var(--navy-950));
+}
+
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+
+h1,h2,h3{
+  font-family:var(--font-display);
+  font-weight:700;
+  line-height:0.98;
+  letter-spacing:0.01em;
+  text-transform:uppercase;
+  margin:0;
+  overflow-wrap:anywhere;
+  min-width:0;
+}
+
+.wrap{max-width:var(--wrap);margin:0 auto;padding-inline:var(--pad)}
+
+.eyebrow{
+  font-family:var(--font-display);
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.16em;
+  font-size:.82rem;
+  color:var(--orange-300);
+  display:inline-flex;align-items:center;gap:.5em;
+}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--orange);display:inline-block;border-radius:2px}
+
+/* ---- buttons ---- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.55em;
+  font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:.03em;
+  font-size:1.02rem;padding:.85em 1.5em;border-radius:var(--r-pill);
+  border:1px solid transparent;cursor:pointer;white-space:nowrap;
+  transition:transform var(--dur) var(--ease-out),background var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out);
+}
+.btn svg{width:1.15em;height:1.15em}
+.btn-primary{background:var(--orange);color:var(--navy);box-shadow:0 10px 26px -10px oklch(69.3% 0.206 43 / 0.7)}
+.btn-primary:hover{background:var(--orange-300);transform:translateY(-2px)}
+.btn-ghost{
+  background:var(--glass-dark);color:var(--white);
+  border-color:var(--glass-border);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.btn-ghost:hover{background:rgba(255,255,255,0.16);transform:translateY(-2px)}
+.btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+
+/* ---- glass primitives ---- */
+.glass{
+  background:var(--glass-dark);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-lg);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  box-shadow:var(--shadow-glass),inset 0 1px 0 var(--glass-hi);
+}
+.glass-lt{
+  background:var(--glass-light);
+  border:1px solid var(--glass-border-lt);
+  border-radius:var(--r-lg);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+  backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+  box-shadow:var(--shadow-soft),inset 0 1px 0 rgba(255,255,255,0.8);
+  color:var(--ink);
+}
+
+/* ================= NAV (N5 floating glass pill) ================= */
+.nav{position:fixed;inset:14px var(--pad) auto;z-index:50;display:flex;justify-content:center;pointer-events:none}
+.nav-pill{
+  pointer-events:auto;
+  width:min(var(--wrap),100%);
+  display:flex;align-items:center;gap:12px;
+  padding:9px 9px 9px 14px;
+  background:var(--glass-navy);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-pill);
+  -webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:blur(16px) saturate(150%);
+  box-shadow:var(--shadow-soft),inset 0 1px 0 var(--glass-hi);
+}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.brand img{width:38px;height:38px;border-radius:10px;background:var(--white);padding:3px;flex:none}
+.brand b{display:block;font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--white);font-size:1.05rem;line-height:1;white-space:nowrap}
+.brand span{display:block;font-family:var(--font-body);font-weight:500;font-size:.62rem;letter-spacing:.14em;color:var(--orange-300);text-transform:uppercase}
+.nav-links{display:none;gap:22px;margin-right:8px}
+.nav-links a{font-size:.92rem;color:rgba(255,255,255,0.82);font-weight:500;transition:color var(--dur) var(--ease-out)}
+.nav-links a:hover{color:var(--white)}
+.nav .btn{font-size:.9rem;padding:.6em 1.05em}
+.nav-callfull{display:none}
+
+/* ================= HERO ================= */
+.hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:clip}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.hero-bg::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(180deg, rgba(6,16,44,0.55) 0%, rgba(6,16,44,0.15) 30%, rgba(4,12,38,0.82) 100%),
+    radial-gradient(90% 60% at 80% 0%, oklch(69.3% 0.206 43 / 0.22), transparent 60%);
+}
+.hero-inner{position:relative;z-index:1;width:100%;padding-block:120px clamp(30px,7vw,64px)}
+.hero-card{
+  padding:clamp(22px,5vw,40px);
+  max-width:640px;
+}
+.hero-card .eyebrow{margin-bottom:16px}
+.hero h1{
+  color:var(--white);
+  font-size:clamp(2.6rem,10vw,4.6rem);
+  font-weight:800;
+  text-shadow:0 2px 30px rgba(0,0,0,0.35);
+}
+.hero h1 em{font-style:normal;color:var(--orange-300);display:block}
+.hero-sub{color:rgba(255,255,255,0.92);font-size:clamp(1.02rem,3.6vw,1.22rem);margin:18px 0 26px;max-width:52ch}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px}
+.hero-cta .btn{flex:1 1 auto}
+.scroll-cue{margin-top:22px;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.6);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-family:var(--font-display)}
+
+/* ================= TRUST STRIP ================= */
+.trust{position:relative;z-index:2;margin-top:-38px}
+.trust-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  overflow:hidden;padding:0;
+}
+.trust-item{display:flex;flex-direction:column;gap:2px;padding:18px 16px;text-align:center;color:var(--white)}
+.trust-item b{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--orange-300);line-height:1}
+.trust-item span{font-size:.78rem;color:rgba(255,255,255,0.78);letter-spacing:.02em}
+
+/* ================= SECTION SHELL ================= */
+section.block{padding-block:clamp(64px,12vw,110px);position:relative}
+.sec-head{max-width:640px;margin-bottom:clamp(28px,6vw,48px)}
+.sec-head h2{color:var(--white);font-size:clamp(1.9rem,7vw,3rem);margin-top:14px}
+.sec-head p{color:rgba(255,255,255,0.72);font-size:1.05rem;margin:14px 0 0}
+
+/* ================= STORY ================= */
+.story-grid{display:grid;gap:22px}
+.story-portrait{position:relative;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-glass)}
+.story-portrait img{width:100%;height:100%;object-fit:cover;aspect-ratio:4/5}
+.story-portrait figcaption{
+  position:absolute;left:14px;right:14px;bottom:14px;
+  padding:12px 16px;border-radius:var(--r-md);
+  background:var(--glass-navy);border:1px solid var(--glass-border);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  color:var(--white);
+}
+.story-portrait figcaption b{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.03em;display:block;font-size:1.05rem}
+.story-portrait figcaption span{font-size:.82rem;color:var(--orange-300)}
+.story-copy{padding:clamp(24px,5vw,40px)}
+.story-copy h2{color:var(--white);font-size:clamp(1.8rem,6vw,2.6rem);margin-bottom:18px}
+.story-copy p{color:rgba(255,255,255,0.82);margin:0 0 16px}
+.pull{
+  margin:22px 0 0;padding:18px 20px;border-left:3px solid var(--orange);
+  background:var(--glass-dark-2);border-radius:0 var(--r-md) var(--r-md) 0;
+  font-family:var(--font-display);font-size:1.25rem;font-weight:600;text-transform:none;
+  color:var(--white);line-height:1.25;
+}
+.sign{margin-top:18px;display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.7);font-size:.9rem}
+.sign b{color:var(--white);font-family:var(--font-display);text-transform:uppercase;letter-spacing:.03em;font-size:1.1rem}
+
+/* ================= SERVICES ================= */
+.svc-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.svc{
+  padding:22px;border-radius:var(--r-md);
+  display:flex;flex-direction:column;gap:12px;
+  transition:transform var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out),background var(--dur) var(--ease-out);
+}
+.svc:hover{transform:translateY(-4px);border-color:var(--glass-border-lt);background:rgba(255,255,255,0.14)}
+.svc-ic{
+  width:46px;height:46px;border-radius:12px;flex:none;
+  display:grid;place-items:center;
+  background:oklch(69.3% 0.206 43 / 0.16);border:1px solid oklch(69.3% 0.206 43 / 0.4);
+}
+.svc-ic svg{width:24px;height:24px;stroke:var(--orange-300);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.svc h3{color:var(--white);font-size:1.28rem}
+.svc p{margin:0;color:rgba(255,255,255,0.74);font-size:.95rem}
+
+/* ================= PROJECTS ================= */
+.proj-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.proj{
+  position:relative;border-radius:var(--r-md);overflow:hidden;
+  border:1px solid var(--glass-border);box-shadow:var(--shadow-soft);
+}
+.proj img{width:100%;height:100%;object-fit:cover;aspect-ratio:3/4;transition:transform 600ms var(--ease-out)}
+.proj:hover img{transform:scale(1.06)}
+.proj::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(4,12,38,0.55));pointer-events:none}
+.proj.tall{grid-row:span 1}
+
+/* ================= PRICING ================= */
+.price-wrap{display:grid;gap:16px}
+.price-card{padding:clamp(24px,5vw,36px)}
+.price-card h3{color:var(--white);font-size:1.5rem;margin-bottom:6px}
+.price-rows{display:grid;gap:12px;margin:18px 0}
+.price-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12)}
+.price-row:last-child{border-bottom:0;padding-bottom:0}
+.price-row .lbl{color:rgba(255,255,255,0.85)}
+.price-row .amt{font-family:var(--font-display);font-weight:700;color:var(--orange-300);font-size:1.35rem;white-space:nowrap}
+.price-note{font-size:.85rem;color:rgba(255,255,255,0.6);margin-top:4px}
+.free-quote{padding:clamp(24px,5vw,36px);display:flex;flex-direction:column;justify-content:center;gap:14px}
+.free-quote h3{color:var(--navy);font-size:1.7rem}
+.free-quote p{margin:0;color:var(--ink-2)}
+
+/* ================= FAQ ================= */
+.faq-list{display:grid;gap:12px}
+.faq{border-radius:var(--r-md);overflow:hidden}
+.faq summary{
+  list-style:none;cursor:pointer;padding:18px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  font-family:var(--font-display);font-weight:600;text-transform:uppercase;letter-spacing:.02em;
+  font-size:1.08rem;color:var(--white);
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .plus{width:24px;height:24px;flex:none;position:relative;transition:transform var(--dur) var(--ease-out)}
+.faq summary .plus::before,.faq summary .plus::after{content:"";position:absolute;background:var(--orange);border-radius:2px}
+.faq summary .plus::before{inset:11px 0;height:2px}
+.faq summary .plus::after{inset:0 11px;width:2px}
+.faq[open] summary .plus{transform:rotate(135deg)}
+.faq .ans{padding:0 20px 20px;color:rgba(255,255,255,0.78);font-size:.97rem}
+
+/* ================= PARTNER ================= */
+.partner{display:flex;flex-wrap:wrap;align-items:center;gap:22px;padding:clamp(22px,5vw,32px)}
+.partner img{width:120px;height:auto;border-radius:12px;background:var(--white);padding:8px;flex:none}
+.partner div b{font-family:var(--font-display);text-transform:uppercase;color:var(--white);font-size:1.2rem;letter-spacing:.03em;display:block}
+.partner div span{color:rgba(255,255,255,0.72);font-size:.95rem}
+
+/* ================= CONTACT ================= */
+.contact{position:relative;overflow:clip}
+.contact-bg{position:absolute;inset:0;z-index:0}
+.contact-bg img{width:100%;height:100%;object-fit:cover}
+.contact-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,16,44,0.86),rgba(4,12,38,0.94))}
+.contact .wrap{position:relative;z-index:1}
+.contact-card{padding:clamp(26px,6vw,48px)}
+.contact-card h2{color:var(--white);font-size:clamp(2rem,7vw,3rem);margin:14px 0 12px}
+.contact-card>p{color:rgba(255,255,255,0.8);max-width:48ch;margin:0 0 26px}
+.nap{display:grid;gap:14px;margin-bottom:26px}
+.nap a,.nap div{display:flex;align-items:center;gap:14px;color:var(--white)}
+.nap svg{width:20px;height:20px;stroke:var(--orange-300);fill:none;stroke-width:1.7;flex:none}
+.nap .big{font-family:var(--font-display);font-size:1.6rem;font-weight:700;letter-spacing:.02em}
+.nap small{display:block;color:rgba(255,255,255,0.6);font-size:.78rem;text-transform:uppercase;letter-spacing:.1em}
+.contact-cta{display:flex;flex-wrap:wrap;gap:12px}
+
+/* ================= FOOTER (Ft5 statement) ================= */
+footer.site{padding:clamp(40px,8vw,64px) 0 40px;border-top:1px solid rgba(255,255,255,0.1)}
+.foot-top{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-bottom:26px}
+.foot-top img{width:56px;height:56px;border-radius:12px;background:var(--white);padding:5px}
+.foot-top b{font-family:var(--font-display);text-transform:uppercase;color:var(--white);font-size:1.6rem;letter-spacing:.03em;line-height:1}
+.foot-top span{display:block;color:var(--orange-300);font-size:.85rem;letter-spacing:.06em}
+.foot-meta{display:flex;flex-wrap:wrap;gap:8px 22px;color:rgba(255,255,255,0.62);font-size:.9rem}
+.foot-legal{margin-top:22px;color:rgba(255,255,255,0.42);font-size:.82rem}
+
+/* ================= LOAD INTRO (van front → background, cards fade in) ================= */
+.intro{
+  position:fixed;inset:0;z-index:999;display:none;
+  will-change:opacity,transform;transform-origin:center 40%;
+  transition:opacity 1100ms var(--ease-out),transform 1500ms var(--ease-out);
+}
+html.js .intro{display:block}
+.intro img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.intro::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(180deg, rgba(6,16,44,0.55) 0%, rgba(6,16,44,0.15) 30%, rgba(4,12,38,0.82) 100%),
+    radial-gradient(90% 60% at 80% 0%, oklch(69.3% 0.206 43 / 0.22), transparent 60%);
+}
+.intro.gone{opacity:0;transform:scale(1.07);pointer-events:none}
+/* content held out until the van settles into the background */
+html.js .nav-pill{opacity:0;transform:translateY(-14px);transition:opacity 760ms var(--ease-out),transform 760ms var(--ease-out)}
+html.js .hero-card{opacity:0;transform:translateY(26px);transition:opacity 820ms var(--ease-out) 120ms,transform 820ms var(--ease-out) 120ms}
+body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
+
+/* ================= TESTIMONIALS ================= */
+.rev-top{display:flex;flex-wrap:wrap;align-items:center;gap:16px 26px;padding:20px 24px;margin-bottom:16px}
+.rev-score{display:flex;align-items:center;gap:14px}
+.rev-score .num{font-family:var(--font-display);font-weight:800;font-size:2.8rem;color:var(--white);line-height:1}
+.rev-score .meta{color:rgba(255,255,255,0.78);font-size:.92rem;line-height:1.3}
+.rev-score .meta b{color:var(--orange-300);font-weight:600}
+.stars{display:inline-flex;gap:2px}
+.stars svg{width:18px;height:18px;fill:var(--orange)}
+.rev-top .gmark{margin-left:auto;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.68);font-size:.82rem}
+.rev-top .gmark svg{width:20px;height:20px;flex:none}
+.rev-grid{columns:1;column-gap:14px}
+.rev{break-inside:avoid;-webkit-column-break-inside:avoid;margin:0 0 14px;padding:22px 24px;border-radius:var(--r-md);
+  display:flex;flex-direction:column;gap:13px;
+  transition:transform var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out)}
+.rev:hover{transform:translateY(-4px);border-color:var(--glass-border-lt)}
+.rstars{color:var(--orange);font-size:1rem;letter-spacing:3px;line-height:1}
+.rev .q{color:rgba(255,255,255,0.92);font-size:1rem;line-height:1.62;margin:0}
+.rev .q::before{content:"\201C";color:var(--orange);font-family:var(--font-display);font-weight:700;font-size:2rem;line-height:0;vertical-align:-0.42em;margin-right:.08em}
+.rev .by{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.66);font-size:.88rem;padding-top:3px}
+.rev .by b{color:var(--white);font-weight:600;font-family:var(--font-display);letter-spacing:.02em;text-transform:uppercase}
+.rev .by .g{width:16px;height:16px;flex:none}
+.rev-more{text-align:center;margin-top:12px}
+@media (min-width:640px){.rev-grid{columns:2}}
+@media (min-width:960px){.rev-grid{columns:3}}
+
+/* ================= REVEAL MOTION ================= */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity 620ms var(--ease-out),transform 620ms var(--ease-out)}
+.reveal.in{opacity:1;transform:none}
+
+/* ================= RESPONSIVE ================= */
+@media (min-width:560px){
+  .trust-row{grid-template-columns:repeat(4,1fr)}
+  .proj-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (min-width:720px){
+  .nav-links{display:flex}
+  .nav-callfull{display:inline-flex}
+  .nav-callmini{display:none}
+  .svc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero-cta .btn{flex:0 0 auto}
+}
+@media (min-width:900px){
+  .story-grid{grid-template-columns:0.82fr 1.18fr;align-items:stretch}
+  .svc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .price-wrap{grid-template-columns:1.15fr 0.85fr}
+  .proj-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (min-width:1040px){
+  .svc-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .reveal{transition:opacity 140ms linear;transform:none}
+  .btn,.svc,.proj img{transition:none}
+  .intro{display:none !important}
+  html.js .nav-pill,html.js .hero-card{opacity:1;transform:none;transition:none}
+  *{scroll-behavior:auto !important}
+}
+</style>
+</head>
+<body class="field">
+
+<!-- ===== LOAD INTRO OVERLAY (van shows first, fades into hero background) ===== -->
+<div class="intro" aria-hidden="true">
+  <img data-slot="hero-van" src="../brand/photos/branding/wilkin-van-sunset.jpg" alt="">
+</div>
+
+<!-- ===== NAV ===== -->
+<nav class="nav" aria-label="Primary">
+  <div class="nav-pill">
+    <a class="brand" href="#top" aria-label="Wilkin Plumbing home">
+      <img data-slot="logo" src="../brand/logo/wilkin-logo.png" alt="Wilkin Plumbing logo">
+      <span><b>Wilkin Plumbing</b>Barrie &amp; Orillia</span>
+    </a>
+    <div class="nav-links">
+      <a href="#story">Story</a>
+      <a href="#services">Services</a>
+      <a href="#work">Work</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <a class="btn btn-primary nav-callfull" href="tel:+17058882651">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      705 888 2651
+    </a>
+    <a class="btn btn-primary nav-callmini" href="tel:+17058882651" aria-label="Call 705 888 2651" style="padding:.6em .8em">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Call
+    </a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header class="hero" id="top">
+  <div class="hero-bg">
+    <img data-slot="hero-van" src="../brand/photos/branding/wilkin-van-sunset.jpg" alt="The Wilkin Plumbing work van at sunset" fetchpriority="high">
+  </div>
+  <div class="hero-inner">
+    <div class="wrap">
+      <div class="hero-card glass">
+        <span data-edit="hero-eyebrow" class="eyebrow">Residential &amp; Commercial · Barrie + Orillia</span>
+        <h1 data-edit="hero-title">Reliable plumbing <em>you can trust.</em></h1>
+        <p data-edit="hero-sub" class="hero-sub">When you call me, you get me. Not a call centre, not a big crew. Just Roy, a licensed journeyman plumber who treats your home like his own.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="tel:+17058882651">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Call 705 888 2651
+          </a>
+          <a class="btn btn-ghost" href="#contact">Get a free quote</a>
+        </div>
+        <div data-edit="hero-hours" class="scroll-cue">Open daily 6am to 10pm</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== TRUST STRIP ===== -->
+<div class="wrap trust">
+  <div class="trust-row glass reveal">
+    <div class="trust-item"><b data-edit="trust-1-b">20 yrs</b><span data-edit="trust-1-s">In the trade</span></div>
+    <div class="trust-item"><b data-edit="trust-2-b">Licensed</b><span data-edit="trust-2-s">Journeyman plumber</span></div>
+    <div class="trust-item"><b data-edit="trust-3-b">Certified</b><span data-edit="trust-3-s">Backflow prevention</span></div>
+    <div class="trust-item"><b data-edit="trust-4-b">6am–10pm</b><span data-edit="trust-4-s">Open every day</span></div>
+  </div>
+</div>
+
+<!-- ===== STORY ===== -->
+<section class="block" id="story">
+  <div class="wrap">
+    <div class="story-grid">
+      <figure class="story-portrait reveal" style="margin:0">
+        <img data-slot="roy" src="../brand/photos/portrait/roy-headshot.jpg" alt="Roy, owner of Wilkin Plumbing">
+        <figcaption><b>Roy</b><span>Owner &amp; journeyman plumber</span></figcaption>
+      </figure>
+      <div class="story-copy glass reveal">
+        <span data-edit="story-eyebrow" class="eyebrow">The person behind the wrench</span>
+        <h2 data-edit="story-h2">When you call me,<br>you get me.</h2>
+        <p data-edit="story-p1">Hi, I'm Roy. I'm a licensed and skilled journeyman plumber with 20 years in the trade. I'm originally from the UK, and in January 2021 my family and I moved to Barrie to build something of our own.</p>
+        <p data-edit="story-p2">I started out with a local plumbing company, and it showed me exactly what I wanted to bring to this community. A more personal service. Real attention to detail. Fair, honest pricing.</p>
+        <p data-edit="story-p3">For me, plumbing isn't only about fixing the problem. It's about making sure you feel looked after. I pay close attention to the details, and I treat every home as if it were mine.</p>
+        <blockquote data-edit="story-quote" class="pull">"I show up when I say I will, I'm honest and upfront, and the job isn't finished until you're completely happy."</blockquote>
+        <div class="sign"><b data-edit="story-sign-name">Roy Wilkin</b><span data-edit="story-sign-loc">Wilkin Plumbing, Barrie ON</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section class="block" id="services">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span data-edit="svc-eyebrow" class="eyebrow">What I do</span>
+      <h2 data-edit="svc-h2">Plumbing done properly, start to finish.</h2>
+      <p data-edit="svc-p">One plumber, one standard. From a dripping tap to a full bathroom renovation, here is how I can help.</p>
+    </div>
+    <div class="svc-grid">
+      <article class="svc glass reveal">
+        <span class="svc-ic"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.3 2.3-2-2 2.3-2.3z"/></svg></span>
+        <h3 data-edit="svc-1-h">Residential Plumbing</h3>
+        <p data-edit="svc-1-p">Leaky faucets, clogged drains and blocked pipes. Fast, reliable fixes you can count on.</p>
+      </article>
+      <article class="svc glass reveal">
+        <span class="svc-ic"><svg viewBox="0 0 24 24"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"/><path d="M15 9h4a1 1 0 0 1 1 1v11"/><path d="M2 21h20M8 8h0M8 12h0M8 16h0M11 8h0M11 12h0M11 16h0"/></svg></span>
+        <h3 data-edit="svc-2-h">Commercial Plumbing</h3>
+        <p data-edit="svc-2-p">Work that fits around your business, so your day keeps moving with minimal disruption.</p>
+      </article>
+      <article class="svc glass reveal">
+        <span class="svc-ic"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <h3 data-edit="svc-3-h">Backflow Prevention</h3>
+        <p data-edit="svc-3-p">Cross connection testing, surveys, install and repair. Fully compliant with the municipality.</p>
+      </article>
+      <article class="svc glass reveal">
+        <span class="svc-ic"><svg viewBox="0 0 24 24"><path d="M12 2s5 4.5 5 9a5 5 0 0 1-10 0c0-1.6.7-3.2 1.6-4.5"/><path d="M12 22v-3M9 22h6"/></svg></span>
+        <h3 data-edit="svc-4-h">Water Heater Repair &amp; Install</h3>
+        <p data-edit="svc-4-p">Diagnose and repair fast, or install new. I work on all types of water heater.</p>
+      </article>
+      <article class="svc glass reveal">
+        <span class="svc-ic"><svg viewBox="0 0 24 24"><path d="M3 7h4v4a5 5 0 0 0 5 5h2"/><path d="M17 12h4v4a3 3 0 0 1-3 3H9"/><path d="M3 7V4M7 7V4"/></svg></span>
+        <h3 data-edit="svc-5-h">Sewer Line Services</h3>
+        <p data-edit="svc-5-p">Clogs, backups and tree root infiltration, cleared and repaired properly.</p>
+      </article>
+      <article class="svc glass reveal">
+        <span class="svc-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M9 11h4M11 9v4"/></svg></span>
+        <h3 data-edit="svc-6-h">Home Inspection</h3>
+        <p data-edit="svc-6-p">A full visual plumbing check for buyers and owners, with a clear plan to fix any faults.</p>
+      </article>
+      <article class="svc glass reveal">
+        <span class="svc-ic"><svg viewBox="0 0 24 24"><path d="M4 12V6a2 2 0 0 1 2-2 2 2 0 0 1 2 2M2 12h20v3a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"/><path d="M6 19v2M18 19v2"/></svg></span>
+        <h3 data-edit="svc-7-h">Bathroom Renovation</h3>
+        <p data-edit="svc-7-p">Full renovations including tile, electrical and building work. Start to finish, I handle it.</p>
+      </article>
+      <article class="svc glass reveal">
+        <span class="svc-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 0 1-4 0v-.1A1.7 1.7 0 0 0 7 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 2.6 15H2a2 2 0 0 1 0-4h.1A1.7 1.7 0 0 0 4 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 9 4.6V4a2 2 0 0 1 4 0v.1A1.7 1.7 0 0 0 17 4.6l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 21.4 9H22a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
+        <h3 data-edit="svc-8-h">Plumbing Maintenance</h3>
+        <p data-edit="svc-8-p">Preventive upkeep that keeps small issues from turning into costly repairs.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECTS ===== -->
+<section class="block" id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span data-edit="work-eyebrow" class="eyebrow">Recent work</span>
+      <h2 data-edit="work-h2">Bathrooms and fixtures, taken from start to finish.</h2>
+      <p data-edit="work-p">A few of the jobs I've completed around Barrie and Orillia.</p>
+    </div>
+    <div class="proj-grid reveal">
+      <figure class="proj" style="margin:0"><img data-slot="project-1" src="../brand/photos/projects/freestanding-tub-01.jpg" alt="Modern freestanding bathtub with floor-mounted faucet" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-2" src="../brand/photos/projects/tiled-walkin-shower-black.jpg" alt="Tiled walk-in shower with black fixtures" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-3" src="../brand/photos/projects/double-vanity-bathroom.jpg" alt="Double-sink vanity in a large bathroom" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-4" src="../brand/photos/projects/glass-shower-enclosure.jpg" alt="Glass shower enclosure" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-5" src="../brand/photos/projects/freestanding-tub-mosaic.jpg" alt="Freestanding tub with mosaic tile surround" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-6" src="../brand/photos/projects/bathroom-sink-basin.jpg" alt="Drop-in sink basin with new faucet" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-7" src="../brand/photos/projects/bath-tub-shower-combo.jpg" alt="Tiled tub and shower combination" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-8" src="../brand/photos/projects/utility-bar-sink.jpg" alt="Utility bar sink in white cabinet" loading="lazy"></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS (real Google reviews shown on the live site) ===== -->
+<section class="block" id="reviews">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span data-edit="rev-eyebrow" class="eyebrow">Straight from Google</span>
+      <h2 data-edit="rev-h2">What Barrie neighbours say.</h2>
+      <p data-edit="rev-p">Real reviews from Roy's Google Business Profile. Read every one on Google.</p>
+    </div>
+
+    <div class="rev-top glass reveal">
+      <div class="rev-score">
+        <span class="num">4.9</span>
+        <div>
+          <span class="stars" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.8 5.9 20.4l1.5-6.8L2.2 9l6.9-.7z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.8 5.9 20.4l1.5-6.8L2.2 9l6.9-.7z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.8 5.9 20.4l1.5-6.8L2.2 9l6.9-.7z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.8 5.9 20.4l1.5-6.8L2.2 9l6.9-.7z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.8 5.9 20.4l1.5-6.8L2.2 9l6.9-.7z"/></svg>
+          </span>
+          <span data-edit="rev-score-meta" class="meta"><b>4.9 out of 5</b> from 31 Google reviews</span>
+        </div>
+      </div>
+      <span class="gmark">
+        <svg viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.1h11.8c-.5 2.8-2 5.1-4.4 6.7v5.6h7.1C42.7 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.6c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.2H4.3v5.7C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 27.9c-.5-1.3-.7-2.7-.7-4.1s.3-2.8.7-4.1v-5.7H4.3C2.8 17 2 20.4 2 23.8s.8 6.8 2.3 9.8l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 6.9 4.3 14l7.3 5.7c1.7-5.2 6.6-9 12.4-9z"/></svg>
+        Verified on Google
+      </span>
+    </div>
+
+    <div class="rev-grid">
+      <article class="rev glass reveal">
+        <span class="rstars" aria-label="5 out of 5 stars">★★★★★</span>
+        <p class="q">Out of a 0-10 rating, I would give Roy from Wilkin Plumbing a 20. This man is without a doubt the best plumber I have ever dealt with in my 50 years of owning a home. He is so very knowledgeable, kind, professional and he stands by his word. The last two projects he did for us were done with perfection, and although he ran into things that took him longer, he stood by his quote. I would recommend Roy to anyone without hesitation.</p>
+        <p class="by">
+          <svg class="g" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.1h11.8c-.5 2.8-2 5.1-4.4 6.7v5.6h7.1C42.7 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.6c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.2H4.3v5.7C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 27.9c-.5-1.3-.7-2.7-.7-4.1s.3-2.8.7-4.1v-5.7H4.3C2.8 17 2 20.4 2 23.8s.8 6.8 2.3 9.8l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 6.9 4.3 14l7.3 5.7c1.7-5.2 6.6-9 12.4-9z"/></svg>
+          <b>Deborah Madrick</b><span>· Google review</span>
+        </p>
+      </article>
+
+      <article class="rev glass reveal">
+        <span class="rstars" aria-label="5 out of 5 stars">★★★★★</span>
+        <p class="q">I look after 6 Tim Hortons restaurants in Barrie and Roy is our plumber. He is by far the most detailed, knowledgeable, honest plumber we have had. He is quick and prompt at solving any of our plumbing issues at any of our locations. He arrives on time and on the date he schedules us for, and if there is any plumbing emergency, he responds quickly.</p>
+        <p class="by">
+          <svg class="g" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.1h11.8c-.5 2.8-2 5.1-4.4 6.7v5.6h7.1C42.7 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.6c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.2H4.3v5.7C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 27.9c-.5-1.3-.7-2.7-.7-4.1s.3-2.8.7-4.1v-5.7H4.3C2.8 17 2 20.4 2 23.8s.8 6.8 2.3 9.8l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 6.9 4.3 14l7.3 5.7c1.7-5.2 6.6-9 12.4-9z"/></svg>
+          <b>Mily Singh</b><span>· Google review</span>
+        </p>
+      </article>
+
+      <article class="rev glass reveal">
+        <span class="rstars" aria-label="5 out of 5 stars">★★★★★</span>
+        <p class="q">Roy was great at understanding our needs for a new sump pump set up. We are on high ground water in the south east end and Roy fitted us with a two pump set up to ensure peace of mind, along with a wifi water level detector for extra measure. Would highly recommend!</p>
+        <p class="by">
+          <svg class="g" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.1h11.8c-.5 2.8-2 5.1-4.4 6.7v5.6h7.1C42.7 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.6c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.2H4.3v5.7C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 27.9c-.5-1.3-.7-2.7-.7-4.1s.3-2.8.7-4.1v-5.7H4.3C2.8 17 2 20.4 2 23.8s.8 6.8 2.3 9.8l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 6.9 4.3 14l7.3 5.7c1.7-5.2 6.6-9 12.4-9z"/></svg>
+          <b>Anthony M</b><span>· Local Guide</span>
+        </p>
+      </article>
+
+      <article class="rev glass reveal">
+        <span class="rstars" aria-label="5 out of 5 stars">★★★★★</span>
+        <p class="q">My wife and I could not be happier with our new bathroom. Extremely knowledgeable, Roy transformed an empty corner of our basement into a beautiful, fully functional bathroom. His work is impeccable and the end result speaks for itself. A great guy and a pleasure to work with. We would highly recommend him!</p>
+        <p class="by">
+          <svg class="g" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.1h11.8c-.5 2.8-2 5.1-4.4 6.7v5.6h7.1C42.7 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.6c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.2H4.3v5.7C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 27.9c-.5-1.3-.7-2.7-.7-4.1s.3-2.8.7-4.1v-5.7H4.3C2.8 17 2 20.4 2 23.8s.8 6.8 2.3 9.8l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 6.9 4.3 14l7.3 5.7c1.7-5.2 6.6-9 12.4-9z"/></svg>
+          <b>Bill Mercer</b><span>· Google review</span>
+        </p>
+      </article>
+
+      <article class="rev glass reveal">
+        <span class="rstars" aria-label="5 out of 5 stars">★★★★★</span>
+        <p class="q">Roy is an outstanding plumber. When I called him to service my sump pump, he presented multiple solutions to my issues and guided me through the decision-making process. His expertise is remarkable, and he is so professional and a pleasure to deal with. I can't recommend him highly enough!</p>
+        <p class="by">
+          <svg class="g" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.1h11.8c-.5 2.8-2 5.1-4.4 6.7v5.6h7.1C42.7 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.6c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.2H4.3v5.7C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 27.9c-.5-1.3-.7-2.7-.7-4.1s.3-2.8.7-4.1v-5.7H4.3C2.8 17 2 20.4 2 23.8s.8 6.8 2.3 9.8l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 6.9 4.3 14l7.3 5.7c1.7-5.2 6.6-9 12.4-9z"/></svg>
+          <b>cooldogsxena</b><span>· Google review</span>
+        </p>
+      </article>
+
+      <article class="rev glass reveal">
+        <span class="rstars" aria-label="5 out of 5 stars">★★★★★</span>
+        <p class="q">Roy has always been just a phone call away and is quick to respond in time of need. He provides an honest consultation, has done great work for me while leaving the workplace neat and tidy. He is my go to guy!</p>
+        <p class="by">
+          <svg class="g" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.1h11.8c-.5 2.8-2 5.1-4.4 6.7v5.6h7.1C42.7 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.6c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.2H4.3v5.7C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 27.9c-.5-1.3-.7-2.7-.7-4.1s.3-2.8.7-4.1v-5.7H4.3C2.8 17 2 20.4 2 23.8s.8 6.8 2.3 9.8l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 6.9 4.3 14l7.3 5.7c1.7-5.2 6.6-9 12.4-9z"/></svg>
+          <b>Rose Blue</b><span>· Google review</span>
+        </p>
+      </article>
+    </div>
+
+    <div class="rev-more reveal">
+      <a class="btn btn-ghost" href="https://maps.google.com/maps?cid=7673976001051584738" target="_blank" rel="noopener">Read all 31 reviews on Google</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="block" id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span data-edit="price-eyebrow" class="eyebrow">No surprises</span>
+      <h2 data-edit="price-h2">Honest, upfront pricing.</h2>
+      <p data-edit="price-p">Charged on time and materials, so you only pay for the work the job actually needs.</p>
+    </div>
+    <div class="price-wrap">
+      <div class="price-card glass reveal">
+        <h3>Standard rates</h3>
+        <div class="price-rows">
+          <div class="price-row"><span class="lbl">Service call<br><small style="color:rgba(255,255,255,0.55)">Covers the first hour on site, materials separate</small></span><span data-edit="price-amt-1" class="amt">$140 + tax</span></div>
+          <div class="price-row"><span class="lbl">Each additional hour</span><span data-edit="price-amt-2" class="amt">$120 + tax</span></div>
+          <div class="price-row"><span class="lbl">Set-price items</span><span data-edit="price-amt-3" class="amt">On request</span></div>
+        </div>
+        <p data-edit="price-note" class="price-note">Some supplied items, like toilets and faucets, have set prices. Everything is based on the time and materials needed to do the job right.</p>
+      </div>
+      <div class="free-quote glass-lt reveal">
+        <span class="eyebrow" style="color:var(--orange-600)">Free</span>
+        <h3 data-edit="freequote-h3">Most estimates cost nothing.</h3>
+        <p data-edit="freequote-p">I can often quote straight from a few photos you send me. For bigger projects I'm happy to do a site visit at no cost.</p>
+        <a class="btn btn-primary" href="#contact" style="align-self:flex-start">Ask for a quote</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="block" id="faq">
+  <div class="wrap" style="max-width:840px">
+    <div class="sec-head reveal">
+      <span data-edit="faq-eyebrow" class="eyebrow">Good to know</span>
+      <h2 data-edit="faq-h2">Questions I get asked.</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq glass reveal">
+        <summary><span data-edit="faq-1-q">What fixtures can you install?</span><span class="plus"></span></summary>
+        <div data-edit="faq-1-a" class="ans">Sinks, toilets, showers, bathtubs and much more. I usually supply and install the fixtures myself, but I'm happy to work with items you've bought. If it's plumbing related, I can install it.</div>
+      </details>
+      <details class="faq glass reveal">
+        <summary><span data-edit="faq-2-q">How much will it cost?</span><span class="plus"></span></summary>
+        <div data-edit="faq-2-a" class="ans">It depends on the issue and how complex it is to fix. My pricing is based on time and materials. There's a standard service call of $140 + tax that covers the first hour, with materials charged separately. Additional hours are $120 + tax.</div>
+      </details>
+      <details class="faq glass reveal">
+        <summary><span data-edit="faq-3-q">Do you charge for estimates?</span><span class="plus"></span></summary>
+        <div data-edit="faq-3-a" class="ans">Most estimates are free, and I can often quote from photos you send me. For bigger projects I'll do a site visit at no cost. These are usually at set times in the week, so you may need to be flexible. A visit at a time that suits you better may carry a small fee.</div>
+      </details>
+      <details class="faq glass reveal">
+        <summary><span data-edit="faq-4-q">How many plumbers are on staff?</span><span class="plus"></span></summary>
+        <div data-edit="faq-4-a" class="ans">Wilkin Plumbing is run by me, Roy. For larger jobs I bring in a few trusted journeyman plumbers, but they always work alongside me. I'm on site to make sure every job meets my standard.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PARTNER ===== -->
+<section class="block" style="padding-block:0 clamp(48px,10vw,90px)">
+  <div class="wrap">
+    <div class="partner glass reveal">
+      <img data-slot="partner" src="../brand/logo/partner-excalibur.jpg" alt="Excalibur Water Systems authorized dealer badge">
+      <div>
+        <b data-edit="partner-b">Authorized Dealer</b>
+        <span data-edit="partner-s">Excalibur Water Systems. Water treatment and filtration, supplied and installed.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section class="block contact" id="contact">
+  <div class="contact-bg"><img data-slot="contact-bg" src="../brand/photos/services/under-sink-drain-ptrap.jpg" alt="" aria-hidden="true" loading="lazy"></div>
+  <div class="wrap">
+    <div class="contact-card glass reveal">
+      <span data-edit="contact-eyebrow" class="eyebrow">Get in touch</span>
+      <h2 data-edit="contact-h2">Let's get it sorted.</h2>
+      <p data-edit="contact-p">Need a quote, got a question, or want to book a visit? Reach out and I'll make the whole thing easy.</p>
+      <div class="nap">
+        <a href="tel:+17058882651">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span data-edit="contact-phone" class="big">705 888 2651</span>
+        </a>
+        <a href="mailto:info@wilkinplumbing.ca">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          <span data-edit="contact-email">info@wilkinplumbing.ca</span>
+        </a>
+        <div>
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>270 Kozlov St, Barrie, ON L4N 7H6<br><small>Serving Barrie, Orillia and local area</small></span>
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span data-edit="contact-hours">Open every day, 6am to 10pm</span>
+        </div>
+      </div>
+      <div class="contact-cta">
+        <a class="btn btn-primary" href="tel:+17058882651">Call now</a>
+        <a class="btn btn-ghost" href="mailto:info@wilkinplumbing.ca">Send an email</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-top">
+      <img data-slot="logo" src="../brand/logo/wilkin-logo.png" alt="Wilkin Plumbing logo">
+      <div><b>Wilkin Plumbing</b><span data-edit="foot-tag">Reliable plumbing you can trust</span></div>
+    </div>
+    <div class="foot-meta">
+      <span>Licensed journeyman plumber</span>
+      <span>Backflow certified</span>
+      <span>Residential &amp; Commercial</span>
+      <span>Barrie · Orillia</span>
+      <a href="tel:+17058882651">705 888 2651</a>
+    </div>
+    <p data-edit="foot-legal" class="foot-legal">© 2024 Wilkin Plumbing. All rights reserved.</p>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Plumber",
+  "name":"Wilkin Plumbing",
+  "image":"../brand/logo/wilkin-logo.png",
+  "description":"Licensed journeyman plumber serving Barrie and Orillia. Residential and commercial plumbing, water heaters, backflow prevention, sewer lines, bathroom renovations.",
+  "telephone":"+1-705-888-2651",
+  "email":"info@wilkinplumbing.ca",
+  "address":{"@type":"PostalAddress","streetAddress":"270 Kozlov St","addressLocality":"Barrie","addressRegion":"ON","postalCode":"L4N 7H6","addressCountry":"CA"},
+  "areaServed":["Barrie","Orillia"],
+  "openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"06:00","closes":"22:00"},
+  "priceRange":"$$",
+  "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"31"},
+  "review":[
+    {"@type":"Review","author":{"@type":"Person","name":"Deborah Madrick"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"Out of a 0-10 rating, I would give Roy from Wilkin Plumbing a 20. This man is without a doubt the best plumber I have ever dealt with in my 50 years of owning a home. He is so very knowledgeable, kind, professional and he stands by his word. I would recommend Roy to anyone without hesitation."},
+    {"@type":"Review","author":{"@type":"Person","name":"Mily Singh"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"I look after 6 Tim Hortons restaurants in Barrie and Roy is our plumber. He is by far the most detailed, knowledgeable, honest plumber we have had. He is quick and prompt at solving any of our plumbing issues at any of our locations."},
+    {"@type":"Review","author":{"@type":"Person","name":"Bill Mercer"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"My wife and I could not be happier with our new bathroom. Roy transformed an empty corner of our basement into a beautiful, fully functional bathroom. His work is impeccable and the end result speaks for itself. We would highly recommend him!"}
+  ]
+}
+</script>
+
+<script>
+/* Load intro: hold the van full-frame, then fade + push it into the background
+   while the nav and hero card fade in. Runs on every load / reload. */
+(function(){
+  var intro = document.querySelector('.intro');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function showContent(){ document.body.classList.add('content-in'); }
+  if(reduce || !intro){ if(intro) intro.remove(); showContent(); return; }
+
+  var img = intro.querySelector('img');
+  var started = false;
+  function begin(){
+    if(started) return; started = true;
+    // van visible on its own for a beat, then recede into the hero background
+    setTimeout(function(){
+      intro.classList.add('gone');
+      showContent();
+      setTimeout(function(){ if(intro && intro.parentNode) intro.remove(); }, 1600);
+    }, 680);
+  }
+  if(img && img.complete && img.naturalWidth){ begin(); }
+  else if(img){ img.addEventListener('load', begin); img.addEventListener('error', begin); }
+  // safety net: never trap the page behind the overlay
+  setTimeout(begin, 3000);
+})();
+
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    els.forEach(function(e){e.classList.add('in')});
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  },{threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>

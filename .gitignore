@@ -1,0 +1,26 @@
+# backups / snapshots
+*.bak
+
+# server + preview logs
+tools/admin.log
+site/.serve.log
+
+# python
+__pycache__/
+*.pyc
+tools/.venv/
+
+# thumbnail cache
+media-library/.thumbs/
+**/.thumbs/
+
+# build artifact (regenerated)
+site/wilkin-brand-kit.zip
+
+# local agent / tooling config (machine-specific)
+.claude/
+.agents/
+.hallmark/
+
+# os
+.DS_Store
