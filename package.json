@@ -1,0 +1,12 @@
+{
+  "name": "wilkinplumbing",
+  "version": "1.0.0",
+  "description": "Wilkin Plumbing website (static site + local content editor)",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
