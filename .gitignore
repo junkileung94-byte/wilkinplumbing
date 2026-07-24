@@ -24,3 +24,7 @@ site/wilkin-brand-kit.zip
 
 # os
 .DS_Store
+
+# diagnostics / scratch
+tools/_*
+site/_preview.html
