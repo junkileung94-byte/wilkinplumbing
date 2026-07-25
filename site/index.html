@@ -255,7 +255,7 @@ section.block{padding-block:clamp(64px,12vw,110px);position:relative}
 .svc p{margin:0;color:rgba(255,255,255,0.74);font-size:.95rem}
 
 /* ================= PROJECTS ================= */
-.proj-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.proj-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;grid-auto-flow:dense}
 .proj{
   position:relative;border-radius:var(--r-md);overflow:hidden;
   border:1px solid var(--glass-border);box-shadow:var(--shadow-soft);
@@ -264,6 +264,10 @@ section.block{padding-block:clamp(64px,12vw,110px);position:relative}
 .proj:hover img{transform:scale(1.06)}
 .proj::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(4,12,38,0.55));pointer-events:none}
 .proj.tall{grid-row:span 1}
+/* before/after shots are two photos side by side — give them a wide, landscape tile
+   so a 3/4 crop doesn't slice off half the pair */
+.proj.wide{grid-column:span 2}
+.proj.wide img{aspect-ratio:3/2}
 
 /* ================= PRICING ================= */
 .price-wrap{display:grid;gap:16px}
@@ -552,7 +556,7 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
   <div class="wrap">
     <div class="sec-head reveal">
       <span data-edit="work-eyebrow" class="eyebrow">Recent work</span>
-      <h2 data-edit="work-h2">Bathrooms and fixtures, taken from start to finish.</h2>
+      <h2 data-edit="work-h2">Bathrooms, fixtures and mechanical work, start to finish.</h2>
       <p data-edit="work-p">A few of the jobs I've completed around Barrie and Orillia.</p>
     </div>
     <div class="proj-grid reveal">
@@ -564,6 +568,12 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
       <figure class="proj" style="margin:0"><img data-slot="project-6" src="brand/photos/projects/bathroom-sink-basin.jpg" alt="Drop-in sink basin with new faucet" loading="lazy"></figure>
       <figure class="proj" style="margin:0"><img data-slot="project-7" src="brand/photos/projects/bath-tub-shower-combo.jpg" alt="Tiled tub and shower combination" loading="lazy"></figure>
       <figure class="proj" style="margin:0"><img data-slot="project-8" src="brand/photos/projects/utility-bar-sink.jpg" alt="Utility bar sink in white cabinet" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-9" src="brand/photos/services/water-heater-install.jpg" alt="New hot water tank installed with copper supply lines" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-10" src="brand/photos/services/backflow-expansion-tank.jpg" alt="Backflow preventer and thermal expansion tank on copper piping" loading="lazy"></figure>
+      <figure class="proj wide" style="margin:0"><img data-slot="project-11" src="brand/photos/services/water-meter-shutoff-replacement.jpg" alt="Water meter and main shut-off valve replacement, before and after" loading="lazy"></figure>
+      <figure class="proj wide" style="margin:0"><img data-slot="project-12" src="brand/photos/projects/vanity-before-after.jpg" alt="Bathroom vanity replacement, before and after" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-13" src="brand/photos/projects/freestanding-tub-02.jpg" alt="Oval freestanding tub with tiled mosaic border" loading="lazy"></figure>
+      <figure class="proj" style="margin:0"><img data-slot="project-14" src="brand/photos/projects/bath-vanity-small.jpg" alt="Compact bathroom vanity with dark counter" loading="lazy"></figure>
     </div>
   </div>
 </section>

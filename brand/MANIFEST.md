@@ -30,6 +30,7 @@ Original CDN base: `https://img1.wsimg.com/isteam/ip/deca8836-a93a-46d1-b58f-cfa
 | `water-heater-install.jpg` | 600×800 | hot water tank.jpg | Water heater tank installed. → Water Heater service page. |
 | `backflow-expansion-tank.jpg` | 600×800 | backflow1.jpg | Expansion tank + copper assembly. → Backflow / water-system page. |
 | `under-sink-drain-ptrap.jpg` | 1920×2560 | IMG_1508.jpeg | Under-sink drain / P-trap plumbing. → Sewer/Drain service page. |
+| `water-meter-shutoff-replacement.jpg` | 1844×1653 | IMG_0586.JPG | Water meter + main shut-off valve, before/after pair in one frame. → Wide gallery tile. |
 
 ## Project gallery (bathroom renos) — `photos/projects/`
 
