@@ -1,10 +1,12 @@
 {
   "name": "wilkinplumbing",
   "version": "1.0.0",
-  "description": "Wilkin Plumbing website (static site + local content editor)",
+  "description": "Wilkin Plumbing website (static site + authenticated /admin content editor)",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build:locations": "node lib/locations.js",
+    "check:locations": "node lib/locations.js --check"
   },
   "engines": {
     "node": ">=18"

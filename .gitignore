@@ -28,3 +28,11 @@ site/wilkin-brand-kit.zip
 # diagnostics / scratch
 tools/_*
 site/_preview.html
+site/_login.html
+
+# secrets — this repo is PUBLIC. Tokens belong in Hostinger's environment variables,
+# never in a file here. Admin credentials live in ADMIN_STATE_DIR, outside the repo.
+.env
+.env.*
+*.pem
+credentials.json

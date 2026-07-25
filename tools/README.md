@@ -1,77 +1,98 @@
-# tools/ — Wilkin Plumbing site editor
+# Wilkin Plumbing — site, admin and deploy
 
-A small, self-contained content manager for the static site in `../site/`, built
-the same way as the Beauty Extension Haus admin: a stdlib Python server (+ Pillow)
-that scans the HTML for markers and edits `index.html` in place. No database, no
-build step, no runtime JS loader — what you edit is what ships.
+The public site is static HTML in `../site/`. It is served — and edited — by one Node
+app (`../server.js`, no dependencies), which Hostinger runs with `npm start`.
 
-## Files
-- `wilkin_admin_server.py` — the server: serves the site, `/admin`, and the write APIs.
-- `admin.html` — the editor UI (single page, no dependencies).
-- `tag_site.py` — one-time, idempotent tagger that adds the edit markers to `index.html`.
-- `build_locations.py` — generates the per-municipality location pages (see below).
-- `publish.sh` — commit everything and push; Hostinger redeploys from the new commit.
+```
+server.js            public site  +  /admin
+lib/auth.js          password, sessions, rate limiting, first-run setup gate
+lib/editor.js        the content edits themselves (data-edit / data-slot in index.html)
+lib/locations.js     regenerates the 11 location pages from index.html
+lib/github.js        commits each save back to the repo
+admin/app.html       the admin UI (setup → login → editor)
+content/locations.json   per-municipality copy for the location pages
+```
+
+## The admin
+
+`https://wilkinplumbing.ca/admin` — public URL, password protected.
+
+First visit shows a one-time setup screen: enter the **setup token**, pick a username and
+password, done. After that it is a normal login. Setup can only ever run once.
+
+**Why every save is a commit.** Hostinger redeploys the site from the GitHub repo, so a
+file written only on the server is erased by the next deploy. Each save therefore:
+
+1. rewrites `site/index.html`,
+2. regenerates the 11 location pages from it (they are clones — otherwise they drift),
+3. commits all of it to GitHub in a single commit,
+4. Hostinger redeploys, and the change is permanent.
+
+If `GITHUB_TOKEN` is missing or the push fails, the admin says so in plain words rather
+than pretending the edit is safe — the change is live but the next deploy will revert it.
+
+## Required environment variables (Hostinger → your app → Environment)
+
+| Variable | Required | What it does |
+|---|---|---|
+| `ADMIN_SETUP_TOKEN` | **yes** | Gates the one-time setup screen. Minimum 16 characters, random. Without it setup refuses, so a scanner that finds `/admin` first still cannot claim the account. |
+| `GITHUB_TOKEN` | **yes** | Fine-grained PAT, **Contents: read and write**, scoped to this repo only. Lets saves persist. |
+| `GITHUB_REPO` | no | `owner/name`. Defaults to `junkileung94-byte/wilkinplumbing`. |
+| `GITHUB_BRANCH` | no | Defaults to `main`. |
+| `ADMIN_STATE_DIR` | no | Where the username + password hash live. Defaults to `~/.wilkin-admin`. |
+| `ADMIN_COOKIE_SECURE` | no | Set to `1` if the session cookie arrives without the `Secure` flag — i.e. if the host's proxy does not send `x-forwarded-proto`. |
+
+**The repo is public — never put either token in a file.** They belong in Hostinger's
+environment variables and nowhere else. The admin's own credentials are written to
+`ADMIN_STATE_DIR`, deliberately outside the repo, with `0600` permissions.
+
+If the host wipes the home directory on redeploy, the account disappears and the setup
+screen returns; you would set the account up again with the same token. Nothing is
+exposed by that — setup still requires the token.
+
+## Security posture
+
+- Password stored as a **scrypt** hash with a per-account salt, never in plain text.
+- Minimum 12-character password, enforced server-side.
+- Login is rate limited per IP: 8 failures triggers a 15-minute lockout.
+- Session cookie is `HttpOnly`, `SameSite=Strict`, and `Secure` over HTTPS; 12-hour
+  maximum, 2-hour idle timeout.
+- Every write route requires a CSRF token in addition to the session.
+- Submitted text is sanitised — `<script>`, event handlers and `javascript:` URLs are
+  stripped, simple inline formatting survives.
+- `/admin` is `noindex`, `Disallow`ed in robots.txt, and cannot be framed.
+
+Rotating the password today means deleting `~/.wilkin-admin/credentials.json` on the
+server and running setup again.
 
 ## Location pages
-`site/plumber-<municipality>/index.html` is **generated**, not hand-edited.
 
-Each location page is a **clone of `site/index.html`** with locale wording swapped in, so
-it is identical in design to the main page by construction — there is no second layout or
-second stylesheet to keep in sync. Per-municipality copy (and the municipal
-water/wastewater facts each page is built on) lives in `locations_data.py`.
+`site/plumber-<municipality>/index.html` is **generated**, never hand-edited. Each is a
+clone of `site/index.html` with locale wording swapped in, so the design is identical to
+the main page by construction. Copy lives in `../content/locations.json`.
 
 ```bash
-python3 tools/build_locations.py            # rewrite the pages + sitemap.xml + robots.txt
-python3 tools/build_locations.py --check    # verify the committed files are current
+npm run build:locations     # rewrite the pages + sitemap.xml + robots.txt
+npm run check:locations     # verify the committed files are current
 ```
 
-- `locations_data.py` — the copy: one entry per municipality.
-- `build_locations.py` — the transform: head tags, hero, three inserted locale sections,
-  contact heading, JSON-LD, service-area list. It hard-fails if a pattern it needs stops
-  matching `index.html`, rather than quietly shipping the homepage's wording.
+The live admin runs this automatically after every save. You only need it by hand when
+you edit `site/index.html` or `content/locations.json` locally.
 
-**After any change to `site/index.html` — including edits made in `/admin` — re-run the
-builder**, or the location pages keep the old design and copy. `--check` tells you when
-they have drifted. Editing a generated `index.html` directly is pointless; the next run
-overwrites it.
+## Running locally
 
-Styling for all pages, main and location, is `site/assets/site.css`.
-
-## Markers (already applied)
-- `data-slot="..."` on `<img>` the admin can swap/crop. Images that share a slot id
-  (e.g. the two `logo` copies, the two `hero-van` copies) all update together.
-- `data-edit="..."` on text nodes the admin can rewrite in place.
-
-Re-run `python3 tag_site.py` any time you add new photos/text to the HTML and want
-them editable — it only touches nodes it recognises and skips already-tagged ones.
-
-## Run
 ```bash
-# localhost only
-python3 tools/wilkin_admin_server.py            # -> http://127.0.0.1:8795/admin
+npm start                      # http://127.0.0.1:3000  — site and /admin
 
-# reachable over the LAN / tailnet (choose host + port)
-python3 tools/wilkin_admin_server.py 0.0.0.0 8795
+# to exercise the admin locally without touching the real account or the repo:
+ADMIN_STATE_DIR=/tmp/wp-admin ADMIN_SETUP_TOKEN=$(openssl rand -hex 24) npm start
 ```
-Env overrides: `WILKIN_ADMIN_HOST`, `WILKIN_ADMIN_PORT`.
 
-Open `/admin`:
-- **Text** — every editable text node, grouped by section. Edit, Save.
-- **Images** — every image slot with its current photo. "Change" → pick from the
-  library (or upload), crop, apply.
-- **Photo library** — upload new photos (drag & drop or choose files) and delete old
-  ones. The library lives in `../media-library/`, seeded from `../brand/`.
+With no `GITHUB_TOKEN` set, local saves write files and skip the commit — which is the
+old local workflow: edit, then `tools/publish.sh` to commit and push.
 
-## How edits land
-- Text edits rewrite the node's inner HTML directly in `site/index.html`.
-- Applied images are cropped/resized (max 1600px) to `site/assets/photos/slot-<id>.jpg`
-  and the `<img src>` is repointed. Originals in `media-library/` are never modified.
+## Publishing code changes
 
-## Security
-The server has **no auth of its own** — never expose it raw on the public internet.
-Bind to localhost, or put it behind `tailscale serve` / a Cloudflare Tunnel + Access,
-exactly like the haus admin (`../../beautyhaus/deploy/`).
-
-## Notes
-- `site/index.html.pre-tag.bak` — untagged snapshot. `site/index.html.tagged.bak` —
-  tagged snapshot. Safe to delete once you're happy.
+```bash
+tools/publish.sh "message"     # commit everything and push; Hostinger redeploys
+```
