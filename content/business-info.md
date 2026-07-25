@@ -42,6 +42,6 @@ Run solely by Roy. Plans to take an apprentice. For larger jobs brings trusted j
 plumbers who work alongside him, on-site.
 
 ## Legal
-- © 2024 Wilkin Plumbing — All Rights Reserved.
+- © 2026 Wilkin Plumbing — All Rights Reserved.
 - Cookie/analytics notice on current site.
 - Contact form protected by reCAPTCHA (Google privacy/terms).
