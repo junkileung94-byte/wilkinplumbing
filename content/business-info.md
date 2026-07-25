@@ -34,7 +34,6 @@
 
 ## Pricing (from FAQ)
 - Service call: **$140 + tax** (covers first hour on site); materials separate.
-- Additional hours: **$120 + tax**.
 - Time + materials basis; some items (toilets, faucets) have set prices.
 - **Estimates free** — often quoted from photos. Free site visits for bigger jobs (scheduled windows; convenience visits may carry a small fee).
 

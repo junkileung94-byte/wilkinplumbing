@@ -106,7 +106,6 @@ TEXT_TAGS = [
     ('<h2>Honest, upfront pricing.</h2>', "price-h2"),
     ('<p>Charged on time and materials, so you only pay for the work the job actually needs.</p>', "price-p"),
     ('<span class="amt">$140 + tax</span>', "price-amt-1"),
-    ('<span class="amt">$120 + tax</span>', "price-amt-2"),
     ('<span class="amt">On request</span>', "price-amt-3"),
     ('<p class="price-note">Some supplied items, like toilets and faucets, have set prices. Everything is based on the time and materials needed to do the job right.</p>', "price-note"),
     ('<h3>Most estimates cost nothing.</h3>', "freequote-h3"),
