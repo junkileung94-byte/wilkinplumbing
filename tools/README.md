@@ -9,6 +9,24 @@ build step, no runtime JS loader — what you edit is what ships.
 - `wilkin_admin_server.py` — the server: serves the site, `/admin`, and the write APIs.
 - `admin.html` — the editor UI (single page, no dependencies).
 - `tag_site.py` — one-time, idempotent tagger that adds the edit markers to `index.html`.
+- `build_locations.py` — generates the per-municipality location pages (see below).
+- `publish.sh` — commit everything and push; Hostinger redeploys from the new commit.
+
+## Location pages
+`site/plumber-<municipality>/index.html` is **generated**, not hand-edited. The content
+(and the municipal water/wastewater facts each page is built on) lives in the `PLACES`
+list in `build_locations.py`.
+
+```bash
+python3 tools/build_locations.py           # rewrite the pages + sitemap.xml + robots.txt
+python3 tools/build_locations.py --check    # verify the committed files are current
+```
+
+Editing a generated `index.html` directly will be silently overwritten on the next run —
+change `build_locations.py` instead. The admin editor at `/admin` only manages
+`site/index.html`; location pages are outside it.
+
+Shared styling for those pages is `site/assets/location.css` (hand-written, not generated).
 
 ## Markers (already applied)
 - `data-slot="..."` on `<img>` the admin can swap/crop. Images that share a slot id
