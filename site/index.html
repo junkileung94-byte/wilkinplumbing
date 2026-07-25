@@ -255,19 +255,38 @@ section.block{padding-block:clamp(64px,12vw,110px);position:relative}
 .svc p{margin:0;color:rgba(255,255,255,0.74);font-size:.95rem}
 
 /* ================= PROJECTS ================= */
-.proj-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;grid-auto-flow:dense}
+/* two fixed rows, scrolls sideways for the rest of the photos */
+.proj-grid{
+  --tile-w:clamp(180px,44vw,260px);
+  --tile-h:calc(var(--tile-w) * 4 / 3);
+  display:grid;grid-auto-flow:column dense;
+  grid-template-rows:repeat(2,var(--tile-h));
+  grid-auto-columns:var(--tile-w);
+  gap:12px;
+  overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;
+  padding-bottom:12px;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.3) rgba(255,255,255,0.07);
+}
+.proj-grid::-webkit-scrollbar{height:8px}
+.proj-grid::-webkit-scrollbar-track{background:rgba(255,255,255,0.07);border-radius:99px}
+.proj-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3);border-radius:99px}
+.proj-hint{
+  margin:10px 0 0;font-size:0.82rem;letter-spacing:0.04em;text-transform:uppercase;
+  color:rgba(255,255,255,0.55);display:flex;align-items:center;gap:8px;
+}
+.proj-hint svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none}
 .proj{
-  position:relative;border-radius:var(--r-md);overflow:hidden;
+  position:relative;border-radius:var(--r-md);overflow:hidden;scroll-snap-align:start;
   border:1px solid var(--glass-border);box-shadow:var(--shadow-soft);
 }
-.proj img{width:100%;height:100%;object-fit:cover;aspect-ratio:3/4;transition:transform 600ms var(--ease-out)}
+.proj img{width:100%;height:100%;object-fit:cover;transition:transform 600ms var(--ease-out)}
 .proj:hover img{transform:scale(1.06)}
 .proj::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(4,12,38,0.55));pointer-events:none}
 .proj.tall{grid-row:span 1}
-/* before/after shots are two photos side by side — give them a wide, landscape tile
+/* before/after shots are two photos side by side — give them a double-width tile
    so a 3/4 crop doesn't slice off half the pair */
 .proj.wide{grid-column:span 2}
-.proj.wide img{aspect-ratio:3/2}
 
 /* ================= PRICING ================= */
 .price-wrap{display:grid;gap:16px}
@@ -383,7 +402,6 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
 /* ================= RESPONSIVE ================= */
 @media (min-width:560px){
   .trust-row{grid-template-columns:repeat(4,1fr)}
-  .proj-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media (min-width:720px){
   .nav-links{display:flex}
@@ -396,7 +414,6 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
   .story-grid{grid-template-columns:0.82fr 1.18fr;align-items:stretch}
   .svc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .price-wrap{grid-template-columns:1.15fr 0.85fr}
-  .proj-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media (min-width:1040px){
   .svc-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -559,7 +576,7 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
       <h2 data-edit="work-h2">Bathrooms, fixtures and mechanical work, start to finish.</h2>
       <p data-edit="work-p">A few of the jobs I've completed around Barrie and Orillia.</p>
     </div>
-    <div class="proj-grid reveal">
+    <div class="proj-grid reveal" tabindex="0" role="group" aria-label="Recent work photos — scroll sideways for more">
       <figure class="proj" style="margin:0"><img data-slot="project-1" src="brand/photos/projects/freestanding-tub-01.jpg" alt="Modern freestanding bathtub with floor-mounted faucet" loading="lazy"></figure>
       <figure class="proj" style="margin:0"><img data-slot="project-2" src="brand/photos/projects/tiled-walkin-shower-black.jpg" alt="Tiled walk-in shower with black fixtures" loading="lazy"></figure>
       <figure class="proj" style="margin:0"><img data-slot="project-3" src="brand/photos/projects/double-vanity-bathroom.jpg" alt="Double-sink vanity in a large bathroom" loading="lazy"></figure>
@@ -575,6 +592,9 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
       <figure class="proj" style="margin:0"><img data-slot="project-13" src="brand/photos/projects/freestanding-tub-02.jpg" alt="Oval freestanding tub with tiled mosaic border" loading="lazy"></figure>
       <figure class="proj" style="margin:0"><img data-slot="project-14" src="brand/photos/projects/bath-vanity-small.jpg" alt="Compact bathroom vanity with dark counter" loading="lazy"></figure>
     </div>
+    <p data-edit="work-hint" class="proj-hint reveal">Scroll for more work
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </p>
   </div>
 </section>
 
