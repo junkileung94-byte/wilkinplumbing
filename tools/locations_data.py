@@ -1,0 +1,481 @@
+"""Content data for the Wilkin Plumbing location pages.
+
+One entry per municipality. `servicing` and `sources` are the load-bearing fields —
+they are what make each page a different page rather than a template fill, and every
+factual claim in them traces to the municipality's own water/wastewater pages listed
+in `sources`.
+
+Consumed by tools/build_locations.py. Editing here and re-running the builder is how
+location page copy changes.
+"""
+
+PLACES = [
+{
+  'slug': 'barrie',
+  'name': 'Barrie',
+  'kind': 'City',
+  'eyebrow': 'Home base',
+  'drive': 'Based here — 270 Kozlov St, Barrie',
+  'lede': "I'm Roy. I live and work in Barrie, and this is where most of my days are spent — "
+          "licensed journeyman plumber, backflow certified, residential and commercial. When you "
+          "call, you get me, not a call centre.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', '20 years in the trade',
+            'Free estimates, often from photos'],
+  'servicing': [
+      "Barrie runs on two different waters, and which one comes out of your tap depends entirely "
+      "on where in the city you live. Surface water is drawn from Kempenfelt Bay and treated at "
+      "the Surface Water Treatment Plant; the rest of the city is fed by municipal wells tapping "
+      "a deep aquifer. The City publishes an interactive water supply zones map so you can check "
+      "which one serves your address.",
+      "That split matters more than most people realise. The City's own figures put groundwater "
+      "areas at typically 13–20 grains per gallon, against 3–8 grains per gallon in the surface "
+      "water areas. Same city, and one end of it is running water four or five times harder than "
+      "the other. It shows up as scaled water heaters, furred fixtures and short appliance "
+      "lifespans — and whether a softener is worth fitting depends on which zone you're in. I can "
+      "tell you which side of that line you're on before you spend anything.",
+      "For commercial, institutional and multi-residential property, Barrie's Backflow Prevention "
+      "and Cross-Connection Control By-law sets the rules: testable devices tested annually, each "
+      "property assigned a test month with a letter 60 days ahead, work done by a qualified person "
+      "registered with the City's program, and any failed device repaired or replaced immediately "
+      "with Water Operations notified. I'm backflow certified and deal with the municipality on "
+      "this directly.",
+  ],
+  'jobs': [
+      ('Emergency and same-area callouts',
+       "I'm based in Barrie, so nothing here involves a long drive. Burst lines, failed heaters "
+       'and backed-up drains get to the top of the list.'),
+      ('Hard-water damage in the well-fed zones',
+       'Scaled and prematurely dead water heaters, seized fixtures and blocked aerators. '
+       'Softeners and filtration supplied and installed as an authorized Excalibur dealer.'),
+      ('Commercial backflow testing and compliance',
+       "Annual testing, surveys and installs for industrial, commercial, institutional and "
+       "multi-residential property, filed to keep you the right side of the City's by-law."),
+      ('Older east-end and Allandale housing',
+       'Aged supply pipe, seized shutoffs, drains that need rebuilding rather than snaking, and '
+       'bathrooms taken back to studs and done properly.'),
+      ('South-end and new-build homes',
+       'Painswick, Holly, Ardagh and the newer subdivisions — fixture installs, finishing, and '
+       'the faults that surface once a house has been lived in for a few winters.'),
+      ('Restaurants and retail',
+       'Work scheduled around trading hours. I already look after multiple commercial kitchens '
+       'in the city.'),
+  ],
+  'places': ['Downtown Barrie', 'Allandale', 'Painswick', 'Holly', 'Ardagh', 'Sunnidale',
+             'Letitia Heights', 'Grove East', 'Bayfield', 'Hewitt\'s Creek', 'Innis-Shore',
+             'Kempenfelt Bay waterfront'],
+  'sources': [('City of Barrie — drinking water treatment and distribution',
+               'https://www.barrie.ca/services-payments/water-wastewater-stormwater/drinking-water-treatment-distribution'),
+              ('City of Barrie — backflow prevention and cross-connection control by-law',
+               'https://www.barrie.ca/government/policies-laws/laws-listing/backflow-prevention-cross-connection-control-law')],
+  'nearby': ['innisfil', 'springwater', 'oro-medonte', 'orillia'],
+},
+{
+  'slug': 'orillia',
+  'name': 'Orillia',
+  'kind': 'City',
+  'eyebrow': 'Regular run',
+  'drive': 'About 30 minutes up Highway 11 from the shop in Barrie',
+  'lede': "Licensed journeyman plumber covering Orillia — downtown and the north ward through to "
+          "the Couchiching and Simcoe waterfronts. Residential and commercial, same rates as "
+          "Barrie, no travel surcharge.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', '20 years in the trade',
+            'Free estimates, often from photos'],
+  'servicing': [
+      "Most of Orillia's drinking water comes out of Lake Couchiching, with two municipal wells "
+      "topping it up. The lake water goes through a multi-barrier chain at the Water Filtration "
+      "Plant — screening, coagulation, multi-stage flocculation, dual-media gravity filtration, "
+      "then UV and chlorination — while the well supply gets air stripping to deal with historical "
+      "solvent contamination.",
+      "Notice what isn't in that list: softening. The plant's job is pathogens and turbidity, not "
+      "hardness. If you want soft water in Orillia it's equipment in your own house, and as an "
+      "authorized Excalibur Water Systems dealer I supply and install it rather than just "
+      "diagnosing the problem and leaving.",
+      "The distribution network behind all that runs to roughly 205 kilometres of watermain, 960 "
+      "hydrants and more than 1,800 valves — a system with plenty of age in it, feeding housing "
+      "stock that has plenty of age in it too. On the commercial side, Orillia runs its own "
+      "cross-connection control program, with inspection reports on a roughly five-year cycle for "
+      "accounts that aren't exempt.",
+  ],
+  'jobs': [
+      ('Older downtown and north ward homes',
+       'Aged supply pipe, seized shutoffs, cast-iron drain stacks and bathrooms that need '
+       'rebuilding rather than patching.'),
+      ('Softeners and filtration',
+       "City treatment doesn't touch hardness, so that's on you. Supplied and installed as an "
+       'authorized Excalibur Water Systems dealer.'),
+      ('Waterfront and seasonal properties',
+       'Couchiching and Simcoe shoreline places that sit empty for stretches — proper winter '
+       'shutdowns, drain-downs and spring re-commissioning.'),
+      ('Commercial and cross-connection work',
+       'Backflow surveys, installs, repairs and testing for commercial premises, scheduled around '
+       'your opening hours.'),
+      ('Water heaters and emergencies',
+       'Diagnosis, repair and replacement — tank and tankless, gas and electric — plus the burst '
+       'lines and backed-up drains that will not wait.'),
+  ],
+  'places': ['Downtown Orillia', 'North Ward', 'West Ward', 'Couchiching Beach area',
+             'Lake Simcoe waterfront', 'Westmount', 'Sundial', 'Fittons', 'Atherley Road corridor'],
+  'sources': [('City of Orillia — water treatment',
+               'https://www.orillia.ca/living-here/my-property/water-and-sewer/water-and-sewer-services/water-treatment/'),
+              ('City of Orillia — cross connection and backflow',
+               'https://www.orillia.ca/living-here/my-property/water-and-sewer/water-and-sewer-services/cross-connection-and-backflow/')],
+  'nearby': ['severn', 'ramara', 'oro-medonte', 'barrie'],
+},
+{
+  'slug': 'innisfil',
+  'name': 'Innisfil',
+  'kind': 'Town',
+  'drive': 'About 15–20 minutes from the shop in Barrie',
+  'lede': "I'm Roy — a licensed journeyman plumber working out of Barrie, and Innisfil is "
+          "next door. Alcona to Cookstown, the lakeshore to the concession roads: residential "
+          "and commercial, no call centre in between.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "Innisfil is unusual in Simcoe County — water and wastewater are run by InnServices, the "
+      "town's own municipal services corporation, rather than a county or provincial operator. "
+      "Its systems cover Alcona, Stroud, Lefroy, Belle Ewart, Gilford, Cookstown, Churchill and "
+      "Innisfil Heights, with the Lakeshore treatment plant sitting in Alcona.",
+      "Outside those serviced pockets, plenty of Innisfil properties are still on private wells "
+      "and septic — and the town's own watering restrictions exempt private well users, which "
+      "tells you how many there are. Those two realities need different plumbing: pressure tanks, "
+      "softeners and iron filtration on one side of the line, municipal pressure and sewer "
+      "connections on the other.",
+  ],
+  'jobs': [
+      ('New-build fixtures and finishing',
+       'Alcona and Lefroy have absorbed a lot of new housing. I fit and finish fixtures, correct '
+       'builder shortcuts, and sort the things that surface once a house has been lived in.'),
+      ('Lakeshore and seasonal properties',
+       'Belle Ewart, Big Cedar Point, Sandy Cove, Gilford and Leonard\'s Beach. Shutting a place '
+       'down properly for winter and starting it back up in spring without a flooded floor.'),
+      ('Well and pressure-tank work',
+       'On the concessions outside the serviced areas — pumps, pressure tanks, softeners and '
+       'filtration for the iron and hardness that comes with local groundwater.'),
+      ('Commercial backflow testing',
+       'Cross-connection surveys and annual testing on commercial premises, filed for municipal '
+       'compliance. I hold the backflow certification and deal with the municipality directly.'),
+  ],
+  'places': ['Alcona', 'Stroud', 'Lefroy', 'Belle Ewart', 'Gilford', 'Cookstown', 'Churchill',
+             'Sandy Cove', 'Big Cedar Point', 'Innisfil Heights', "Fennell's Corners", "Leonard's Beach"],
+  'sources': [('InnServices — water and wastewater', 'https://innservices.co/'),
+              ('Town of Innisfil — water, sewer and stormwater',
+               'https://www.innisfil.ca/resident-services/water-sewer-stormwater')],
+  'nearby': ['essa', 'bradford-west-gwillimbury', 'new-tecumseth'],
+},
+{
+  'slug': 'springwater',
+  'name': 'Springwater',
+  'kind': 'Township',
+  'drive': 'About 15 minutes from the shop in Barrie — Midhurst is on the city edge',
+  'lede': "A licensed journeyman plumber based in Barrie, working across Springwater — Midhurst "
+          "and Snow Valley through to Elmvale, Hillsdale and Phelpston. Residential and commercial.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "Springwater's municipal water and wastewater servicing follows its settlement areas — "
+      "Anten Mills, Centre Vespra, Elmvale, Hillsdale, Midhurst, Minesing, Phelpston and Snow "
+      "Valley. Meters get read quarterly in Anten Mills, Midhurst, Centre Vespra, Snow Valley and "
+      "parts of Hillsdale and Phelpston, which is a decent shorthand for where the municipal "
+      "system actually reaches.",
+      "Everywhere else in the township is private wells, and the Simcoe Muskoka District Health "
+      "Unit recommends well owners test three times a year. Local groundwater runs hard, and iron "
+      "and manganese are common — that combination is what quietly kills water heaters and "
+      "furs up fixtures out here.",
+  ],
+  'jobs': [
+      ('Softeners and filtration for well water',
+       "Hard water with iron and manganese in it is the standard Springwater problem. I'm an "
+       "authorized Excalibur Water Systems dealer, so I can supply and install the treatment "
+       "rather than just diagnose it."),
+      ('Pumps and pressure tanks',
+       'Short-cycling, pressure loss and failed tanks on properties outside the serviced '
+       'settlement areas.'),
+      ('Older village housing stock',
+       'Elmvale, Hillsdale and Phelpston have plenty of older homes — aged supply pipe, seized '
+       'shutoffs and drain work that was never quite right.'),
+      ('Midhurst and Snow Valley builds',
+       'Newer housing on the Barrie edge: fixture installs, bathroom work and the snags that '
+       'appear after a couple of winters.'),
+  ],
+  'places': ['Midhurst', 'Snow Valley', 'Anten Mills', 'Elmvale', 'Hillsdale', 'Minesing',
+             'Phelpston', 'Centre Vespra', 'Orr Lake', 'Wyevale side roads'],
+  'sources': [('Township of Springwater — water and sewer',
+               'https://www.springwater.ca/living-here/water-and-sewer/'),
+              ('Springwater — water quality and testing',
+               'https://www.springwater.ca/living-here/water-and-sewer/water-quality-and-testing/')],
+  'nearby': ['oro-medonte', 'essa', 'clearview'],
+},
+{
+  'slug': 'oro-medonte',
+  'name': 'Oro-Medonte',
+  'kind': 'Township',
+  'drive': 'About 20 minutes from the shop in Barrie',
+  'lede': "Licensed journeyman plumber covering Oro-Medonte — Shanty Bay and Hawkestone along "
+          "the lake, up through Craighurst, Horseshoe Valley, Warminster and Moonstone.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "The township owns and operates a dozen municipal drinking water systems, but the majority "
+      "of Oro-Medonte residents are still on private wells — and most properties, including Bass "
+      "Lake, Shanty Bay, Edgar, Craighurst, Moonstone and the rural concessions, run on private "
+      "septic. Horseshoe Valley is split: part of it is served by a private resort drinking water "
+      "system rather than the municipal one.",
+      "Oro-Medonte also runs a mandatory septic re-inspection program under the Ontario Building "
+      "Code covering roughly 2,000 properties. If yours is coming up, what happens inside the "
+      "house matters — leaking fixtures and a failing toilet flapper push hydraulic load onto a "
+      "system that is about to be assessed.",
+  ],
+  'jobs': [
+      ('Well, pump and pressure-tank work',
+       'The default in Oro-Medonte. Pressure problems, short cycling, failed tanks, plus '
+       'softeners and filtration for hard groundwater.'),
+      ('Septic-conscious plumbing',
+       'Fixture and drain work on homes with private septic, and fixing the internal leaks that '
+       'load a system before a re-inspection.'),
+      ('Horseshoe Valley and Sugarbush seasonal homes',
+       'Ski-country properties that sit empty midweek. Winterizing, freeze protection and '
+       'getting to a burst line before it becomes a ceiling.'),
+      ('Lakeside Shanty Bay, Hawkestone and Oro Station',
+       'Older waterfront housing stock, seasonal shutoffs and spring re-commissioning.'),
+  ],
+  'places': ['Shanty Bay', 'Hawkestone', 'Oro Station', 'Craighurst', 'Horseshoe Valley',
+             'Sugarbush', 'Edgar', 'Warminster', 'Moonstone', 'Bass Lake', 'Rugby', 'Prices Corners'],
+  'sources': [('Oro-Medonte — drinking water',
+               'https://www.oro-medonte.ca/working-here/township-departments/environmental-services/drinking-water/'),
+              ('Oro-Medonte — wastewater services',
+               'https://www.oro-medonte.ca/working-here/township-departments/environmental-services/wastewater-services/')],
+  'nearby': ['springwater', 'severn', 'ramara'],
+},
+{
+  'slug': 'essa',
+  'name': 'Essa',
+  'kind': 'Township',
+  'drive': 'About 20 minutes from the shop in Barrie',
+  'lede': "Licensed journeyman plumber working across Essa Township — Angus, Thornton, Baxter "
+          "and the rural concessions in between. Residential and commercial.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "Municipal water in Essa is supplied inside Angus, Thornton and Baxter. Angus is the "
+      "township's primary settlement area and the one with both municipal water and sanitary "
+      "sewers; its municipal wells draw from a deep aquifer around Angus and CFB Borden, while "
+      "Thornton's are set in shallower sand aquifers.",
+      "Angus has run up against water and wastewater capacity limits that constrain new "
+      "development — which in practice means a lot of the work here is on the housing that is "
+      "already standing rather than on new subdivisions. Outside the three serviced communities, "
+      "properties are on private wells and septic.",
+  ],
+  'jobs': [
+      ('Angus homes and rental turnover',
+       'Base-adjacent housing turns over often. Fast repairs between tenancies, fixture swaps '
+       'and the inspection-and-fix-list work that comes with a change of occupant.'),
+      ('Hard-water damage to water heaters',
+       'Groundwater here is hard. Scaled and short-lived tanks, plus softeners and filtration '
+       'supplied and installed as an Excalibur dealer.'),
+      ('Commercial work along the Highway 90 corridor',
+       'Backflow surveys, installs and annual testing filed for municipal compliance, scheduled '
+       'around trading hours.'),
+      ('Rural well and septic properties',
+       'Pumps, pressure tanks and drainage on the concessions outside Angus, Thornton and Baxter.'),
+  ],
+  'places': ['Angus', 'Thornton', 'Baxter', 'Ivy', 'Utopia', 'Egbert', 'Colwell', 'CFB Borden area'],
+  'sources': [('Township of Essa — living in Essa',
+               'https://www.essatownship.on.ca/living-in-essa/'),
+              ('Essa — notice to municipal water users in Angus, Thornton and Baxter',
+               'https://www.essatownship.on.ca/news-notices/notice-to-municipal-water-users-in-angus-thornton-and-baxter-flushing-watermains-fall-2024/')],
+  'nearby': ['innisfil', 'springwater', 'new-tecumseth', 'clearview'],
+},
+{
+  'slug': 'bradford-west-gwillimbury',
+  'name': 'Bradford West Gwillimbury',
+  'short': 'Bradford',
+  'kind': 'Town',
+  'drive': 'About 35 minutes from the shop in Barrie',
+  'lede': "Licensed journeyman plumber covering Bradford West Gwillimbury — Bradford, Bond Head, "
+          "Newton Robinson and the Holland Marsh. Residential and commercial.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "Bradford West Gwillimbury is fed by two different kinds of water. Zone 1 runs on "
+      "groundwater from the protected deep Bradford Aquifer; Zone 2 is treated Lake Simcoe "
+      "surface water bought from the Town of Innisfil and produced at the Alcona filtration "
+      "plant. Bond Head is tied into Bradford by a trunk watermain along Line 8 and County Road 27.",
+      "The Holland Marsh is serviced through a joint board shared with the Township of King. "
+      "Marsh properties combine agricultural water use with domestic supply, which is precisely "
+      "the situation cross-connection and backflow rules exist for.",
+  ],
+  'jobs': [
+      ('Backflow prevention on agricultural and irrigation connections',
+       'Holland Marsh operations with irrigation tied anywhere near a potable supply need a '
+       'tested backflow preventer. I survey, install, repair and test, and file for compliance.'),
+      ('Bradford subdivision housing',
+       'Fixture installs, bathroom work and the faults that show up in fast-built housing once '
+       'it has been through a few heating seasons.'),
+      ('Bond Head and Newton Robinson older homes',
+       'Village housing stock with aging supply pipe, seized shutoffs and drains that need '
+       'rebuilding rather than snaking.'),
+      ('Commercial premises',
+       'Scheduled around opening hours, with annual backflow testing kept current.'),
+  ],
+  'places': ['Bradford', 'Bond Head', 'Newton Robinson', 'Holland Marsh', 'Ansnorveldt'],
+  'sources': [('Town of Bradford West Gwillimbury — water supply',
+               'https://www.townofbwg.com/en/living-in-bwg/water-supply.aspx')],
+  'nearby': ['innisfil', 'new-tecumseth'],
+},
+{
+  'slug': 'new-tecumseth',
+  'name': 'New Tecumseth',
+  'kind': 'Town',
+  'drive': 'About 35 minutes from the shop in Barrie',
+  'lede': "Licensed journeyman plumber covering New Tecumseth — Alliston, Beeton and Tottenham, "
+          "plus the rural properties around them. Residential and commercial.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "New Tecumseth draws its municipal water from eleven groundwater production wells — seven "
+      "around Alliston, four around Tottenham, set between roughly 17 and 61 metres deep — "
+      "supplemented by surface water piped in from Collingwood's Raymond A. Barker "
+      "ultra-filtration plant through a 600 mm transmission main. Storage runs to about 27.4 "
+      "million litres across six in-ground reservoirs and two elevated tanks.",
+      "Wastewater is treated locally, including a rebuilt Tottenham plant discharging to Beeton "
+      "Creek. Properties outside the three towns are on private wells and septic, and groundwater "
+      "in this part of the county is hard enough to shorten the life of an untreated water heater.",
+  ],
+  'jobs': [
+      ('Alliston housing, new and older',
+       'A town that has grown in waves — I work on both the recent subdivisions and the older '
+       'streets behind them.'),
+      ('Industrial and commercial backflow',
+       'Cross-connection surveys, preventer installs and the annual test certificates that keep '
+       'a commercial or industrial site compliant.'),
+      ('Beeton and Tottenham older homes',
+       'Aged supply pipe, failing shutoffs, drain rebuilds and bathroom renovations taken start '
+       'to finish.'),
+      ('Rural wells and water treatment',
+       'Pumps, pressure tanks, softeners and filtration outside the serviced areas — supplied and '
+       'installed as an authorized Excalibur dealer.'),
+  ],
+  'places': ['Alliston', 'Beeton', 'Tottenham', 'Everett side roads', 'Rich Hill', 'Penville'],
+  'sources': [('Town of New Tecumseth — water',
+               'https://www.newtecumseth.ca/live-here/services/water-wastewater-stormwater/water/'),
+              ('New Tecumseth — drinking water system annual report',
+               'https://www.newtecumseth.ca/en/living-in-our-community/drinking-water.aspx')],
+  'nearby': ['essa', 'innisfil', 'bradford-west-gwillimbury'],
+},
+{
+  'slug': 'clearview',
+  'name': 'Clearview',
+  'kind': 'Township',
+  'drive': 'About 35 minutes from the shop in Barrie',
+  'lede': "Licensed journeyman plumber covering Clearview Township — Stayner, Creemore, Nottawa, "
+          "New Lowell and the escarpment properties around Duntroon.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "Clearview owns and operates six municipal residential water systems — Stayner, Creemore, "
+      "New Lowell, Nottawa (McKean), Colling-Woodlands and Buckingham Woods — and every one of "
+      "them is fed by groundwater wells rather than surface water. Wastewater is treated at the "
+      "Stayner plant, which discharges to Lamont Creek, and at Creemore's newer membrane plant, "
+      "which outfalls to the Mad River.",
+      "Outside those six systems the township is well-and-septic country. Groundwater supply "
+      "across the whole township means hardness is a constant, whether you are on a municipal "
+      "well or your own.",
+  ],
+  'jobs': [
+      ('Century homes in Creemore and Stayner',
+       'Some of the oldest housing stock I work on. Galvanized supply replacement, drain rebuilds '
+       'and bathrooms taken back to studs and rebuilt properly.'),
+      ('Escarpment and rural properties',
+       'Duntroon, Nottawa and the concessions: wells, pumps, pressure tanks and freeze-prone runs '
+       'in unheated crawl spaces.'),
+      ('Softeners and filtration',
+       'Every municipal system here is groundwater-fed. Treatment supplied and installed as an '
+       'authorized Excalibur Water Systems dealer.'),
+      ('Recreational and second properties',
+       'Places near the ski hills that sit empty for stretches — winterizing, freeze protection '
+       'and spring startup.'),
+  ],
+  'places': ['Stayner', 'Creemore', 'Nottawa', 'New Lowell', 'Duntroon', 'Brentwood', 'Avening',
+             'Sunnidale Corners', 'Glen Huron'],
+  'sources': [('Township of Clearview — water and sewer',
+               'https://www.clearview.ca/municipal-services/water-and-sewer'),
+              ('Clearview — annual water system reports',
+               'https://www.clearview.ca/municipal-services/water-and-sewer/water-sewer-reports-statements')],
+  'nearby': ['springwater', 'essa'],
+},
+{
+  'slug': 'severn',
+  'name': 'Severn',
+  'kind': 'Township',
+  'drive': 'About 35 minutes from the shop in Barrie, and minutes from Orillia',
+  'lede': "Licensed journeyman plumber covering Severn Township — Coldwater, Washago, Port "
+          "Severn, Marchmont and the waterfront properties along the Severn River.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "Severn is genuinely mixed. Coldwater and Washago have both municipal water and municipal "
+      "sewer. Bass Lake Woodlands, Marchmont, Sandcastle Estates and Severn Estates get municipal "
+      "water but no municipal wastewater — those homes are on septic despite being on a municipal "
+      "supply. Ardtrea, Fesserton, Port Severn and Severn Falls are private wells and septic "
+      "throughout.",
+      "The township also runs an on-site sewage system inspection program: a system 40 years or "
+      "older has to be pumped out by a licensed hauler to prove it still works. Internal leaks — a "
+      "running toilet, a dripping fixture — are the cheapest thing to fix before that assessment.",
+  ],
+  'jobs': [
+      ('Waterfront and cottage plumbing',
+       'Port Severn, Severn Falls and the river properties. Proper winter shutdowns, drain-downs '
+       'and spring re-commissioning without a flooded floor.'),
+      ('Water-on-septic homes',
+       'Municipal supply pressure into a private septic system is its own balance. Fixture and '
+       'drainage work that respects what the system downstream can take.'),
+      ('Ageing septic ahead of inspection',
+       'Finding and fixing the internal leaks that load a system before a mandated pump-out and '
+       'inspection.'),
+      ('Wells, pumps and treatment',
+       'Ardtrea, Fesserton and the rural roads — pumps, pressure tanks, softeners and filtration.'),
+  ],
+  'places': ['Coldwater', 'Washago', 'Port Severn', 'Severn Falls', 'Marchmont', 'Fesserton',
+             'Ardtrea', 'Bass Lake Woodlands', 'Cumberland Beach', 'Uhthoff'],
+  'sources': [('Township of Severn — water and sewer services',
+               'https://www.severn.ca/our-community/water-and-sewer-services/'),
+              ('Severn — septic inspection program',
+               'https://www.severn.ca/en/build-and-invest/septic-inspection-program.aspx')],
+  'nearby': ['oro-medonte', 'ramara'],
+},
+{
+  'slug': 'ramara',
+  'name': 'Ramara',
+  'kind': 'Township',
+  'drive': 'About 40 minutes from the shop in Barrie, just past Orillia',
+  'lede': "Licensed journeyman plumber covering Ramara Township — Brechin, Lagoon City, "
+          "Atherley-Uptergrove, Longford Mills and the hamlets out to Sebright.",
+  'facts': ['Licensed journeyman plumber', 'Backflow certified', 'Free estimates, often from photos'],
+  'servicing': [
+      "Ramara owns two wastewater treatment facilities, serving Brechin, Lagoon City and Bayshore "
+      "Village, with a septage receiving station at the Lagoon City plant on Laguna Parkway. The "
+      "township's official plan sets out nine settlement areas: the villages of "
+      "Atherley-Uptergrove, Brechin, Lagoon City and Longford Mills, and the limited-service "
+      "hamlets of Cooper's Falls, Gamebridge, Sebright, Udney and Washago.",
+      "Ramara has also been allocated provincial funding toward water and wastewater upgrades, "
+      "including work at the Brechin and Lagoon City water treatment plant and at Bayshore "
+      "Village. Outside the serviced villages, expect private wells and septic.",
+  ],
+  'jobs': [
+      ('Lagoon City canal homes',
+       'Waterfront housing on the canals, much of it seasonal. Winterizing, sump and backwater '
+       'valve work, and getting a place going again in spring.'),
+      ('Bayshore Village and Brechin',
+       'Serviced village properties — fixtures, water heaters, drain work and bathroom '
+       'renovations taken start to finish.'),
+      ('Hamlet properties on wells and septic',
+       'Udney, Sebright, Gamebridge and Longford Mills. Pumps, pressure tanks, softeners and '
+       'filtration for hard rural groundwater.'),
+      ('Atherley and Uptergrove',
+       'Right on the Orillia edge, which is territory I already cover daily — quick to reach for '
+       'anything urgent.'),
+  ],
+  'places': ['Brechin', 'Lagoon City', 'Atherley', 'Uptergrove', 'Longford Mills', 'Bayshore Village',
+             'Udney', 'Sebright', 'Gamebridge', "Cooper's Falls", 'Washago'],
+  'sources': [('Township of Ramara — sewer systems',
+               'https://www.ramara.ca/living-here/sewer-systems/'),
+              ('Ramara — provincial investment in water and wastewater infrastructure',
+               'https://www.ramara.ca/news/posts/township-of-ramara-grateful-for-provincial-investment-in-water-and-wastewater-infrastructure/')],
+  'nearby': ['severn', 'oro-medonte'],
+},
+]
+
+BY_SLUG = {p["slug"]: p for p in PLACES}

@@ -13,20 +13,29 @@ build step, no runtime JS loader — what you edit is what ships.
 - `publish.sh` — commit everything and push; Hostinger redeploys from the new commit.
 
 ## Location pages
-`site/plumber-<municipality>/index.html` is **generated**, not hand-edited. The content
-(and the municipal water/wastewater facts each page is built on) lives in the `PLACES`
-list in `build_locations.py`.
+`site/plumber-<municipality>/index.html` is **generated**, not hand-edited.
+
+Each location page is a **clone of `site/index.html`** with locale wording swapped in, so
+it is identical in design to the main page by construction — there is no second layout or
+second stylesheet to keep in sync. Per-municipality copy (and the municipal
+water/wastewater facts each page is built on) lives in `locations_data.py`.
 
 ```bash
-python3 tools/build_locations.py           # rewrite the pages + sitemap.xml + robots.txt
+python3 tools/build_locations.py            # rewrite the pages + sitemap.xml + robots.txt
 python3 tools/build_locations.py --check    # verify the committed files are current
 ```
 
-Editing a generated `index.html` directly will be silently overwritten on the next run —
-change `build_locations.py` instead. The admin editor at `/admin` only manages
-`site/index.html`; location pages are outside it.
+- `locations_data.py` — the copy: one entry per municipality.
+- `build_locations.py` — the transform: head tags, hero, three inserted locale sections,
+  contact heading, JSON-LD, service-area list. It hard-fails if a pattern it needs stops
+  matching `index.html`, rather than quietly shipping the homepage's wording.
 
-Shared styling for those pages is `site/assets/location.css` (hand-written, not generated).
+**After any change to `site/index.html` — including edits made in `/admin` — re-run the
+builder**, or the location pages keep the old design and copy. `--check` tells you when
+they have drifted. Editing a generated `index.html` directly is pointless; the next run
+overwrites it.
+
+Styling for all pages, main and location, is `site/assets/site.css`.
 
 ## Markers (already applied)
 - `data-slot="..."` on `<img>` the admin can swap/crop. Images that share a slot id
