@@ -19,9 +19,11 @@ const fs = require('fs');
 const path = require('path');
 
 const auth = require('./lib/auth');
+const booking = require('./lib/booking');
 const editor = require('./lib/editor');
 const locations = require('./lib/locations');
 const github = require('./lib/github');
+const mailer = require('./lib/mailer');
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -92,6 +94,27 @@ function readBody(req) {
     });
     req.on('error', reject);
   });
+}
+
+/* Booking requests are the one write a stranger can make, so they get their own
+ * limiter — same in-memory shape as the login limiter in lib/auth.js. Restarting the
+ * app clears it, which is fine: this is here to stop a bored script filling Roy's
+ * calendar, not to survive a reboot. */
+const bookingHits = new Map();   // ip -> [timestamps]
+const BOOKING_WINDOW_MS = 60 * 60 * 1000;
+const BOOKING_MAX_PER_IP = 5;
+
+function bookingRateLimited(ip) {
+  const now = Date.now();
+  const recent = (bookingHits.get(ip) || []).filter((t) => now - t < BOOKING_WINDOW_MS);
+  if (recent.length >= BOOKING_MAX_PER_IP) {
+    bookingHits.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  bookingHits.set(ip, recent);
+  if (bookingHits.size > 5000) bookingHits.clear();   // crude, but bounded
+  return false;
 }
 
 function sessionOf(req) {
@@ -215,6 +238,90 @@ async function commitChanges(changedRepoPaths, binaryRepoPaths, message) {
   return github.commitFiles(files, message);
 }
 
+// ----------------------------------------------------------- booking (public) ---
+/* Where a new-request email goes: whatever Roy typed in the admin, else SMTP_TO.
+ * Blank means the admin inbox is the only notification, which is a supported setup. */
+function notifyAddress(settings) {
+  return (settings.notifyEmail || process.env.SMTP_TO || '').trim();
+}
+
+function requestEmail(record, settings) {
+  const block = settings.blocks.find((b) => b.id === record.block);
+  const when = `${booking.prettyDate(record.date)} · `
+    + `${block ? `${block.label} (${block.start}–${block.end})` : record.block}`;
+  return {
+    subject: `Booking request — ${record.name} — ${when}`,
+    text: [
+      'A new booking request came in through the website.',
+      '',
+      `When:     ${when}`,
+      `Name:     ${record.name}`,
+      `Phone:    ${record.phone}`,
+      record.email ? `Email:    ${record.email}` : null,
+      `Address:  ${record.address}`,
+      '',
+      'Job:',
+      record.job,
+      '',
+      '---',
+      'The slot is held until you confirm or decline it in the admin:',
+      'https://wilkinplumbing.ca/admin',
+    ].filter((line) => line !== null).join('\n'),
+    replyTo: record.email || undefined,
+  };
+}
+
+async function handleBooking(req, res, pathname) {
+  const headers = { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' };
+
+  if (pathname === '/api/booking/availability' && req.method === 'GET') {
+    return sendJson(res, 200, booking.publicAvailability(), headers);
+  }
+
+  if (pathname === '/api/booking/request' && req.method === 'POST') {
+    const body = await readBody(req);
+
+    // Honeypot: a real person never sees this field, so anything in it is a bot.
+    // Answer 200 so the bot learns nothing from the response.
+    if (String(body.company || '').trim()) {
+      return sendJson(res, 200, { ok: true, reference: 'received' }, headers);
+    }
+
+    if (bookingRateLimited(clientIp(req))) {
+      return sendJson(res, 429, {
+        error: "That's a few requests from this connection already. "
+          + 'Please call 705 888 2651 and I\'ll sort you out.',
+      }, headers);
+    }
+
+    const result = booking.createRequest(body, 'site');
+    if (result.error) {
+      return sendJson(res, result.stale ? 409 : 400,
+        { error: result.error, stale: !!result.stale }, headers);
+    }
+
+    // Email is a courtesy on top of the admin inbox — the request is already saved,
+    // so a mail failure must not fail the booking. Await it only so the outcome can
+    // be logged; the customer's response never depends on it.
+    const to = notifyAddress(result.settings);
+    if (to) {
+      const mail = await mailer.send({ to, ...requestEmail(result.record, result.settings) });
+      if (!mail.sent && mail.reason === 'error') {
+        console.error(`booking ${result.record.id}: email failed — ${mail.error}`);
+      }
+    }
+
+    return sendJson(res, 200, {
+      ok: true,
+      reference: result.record.id.replace('bk_', '').slice(0, 6).toUpperCase(),
+      date: result.record.date,
+      block: result.record.block,
+    }, headers);
+  }
+
+  return sendJson(res, 404, { error: 'Not found' }, headers);
+}
+
 // ------------------------------------------------------------- admin routes ---
 async function handleAdmin(req, res, pathname) {
   // Admin pages and APIs: never cached, never indexed, never framed.
@@ -251,6 +358,8 @@ async function handleAdmin(req, res, pathname) {
       csrf: found ? found.session.csrf : null,
       github: github.enabled(),
       minPassword: auth.MIN_PASSWORD,
+      booking: found ? booking.summary() : null,
+      mail: found ? mailer.status() : null,
     }, adminHeaders);
   }
 
@@ -348,6 +457,83 @@ async function handleAdmin(req, res, pathname) {
     }, adminHeaders);
   }
 
+  /* ---- bookings -----------------------------------------------------------
+   * None of these touch the repo or GitHub. Booking records hold customer names,
+   * phone numbers and addresses; the repo is public. They stay in the state dir.
+   * See the header of lib/booking.js. */
+
+  if (pathname === '/api/admin/booking' && req.method === 'GET') {
+    if (!requireAuth(req, res)) return undefined;
+    return sendJson(res, 200, {
+      settings: booking.readSettings(),
+      requests: booking.listRequests(),
+      schedule: booking.schedule(21),
+      summary: booking.summary(),
+      mail: mailer.status(),
+      today: booking.todayIso(),
+    }, adminHeaders);
+  }
+
+  if (pathname === '/api/admin/booking/settings' && req.method === 'POST') {
+    if (!requireAuth(req, res)) return undefined;
+    const body = await readBody(req);
+    return sendJson(res, 200, { ok: true, settings: booking.writeSettings(body) }, adminHeaders);
+  }
+
+  if (pathname === '/api/admin/booking/request' && req.method === 'POST') {
+    if (!requireAuth(req, res)) return undefined;
+    const body = await readBody(req);
+    const result = booking.updateRequest(String(body.id || ''), body.patch || {});
+    if (result.error) return sendJson(res, 400, result, adminHeaders);
+    return sendJson(res, 200, { ok: true, record: result.record }, adminHeaders);
+  }
+
+  if (pathname === '/api/admin/booking/new' && req.method === 'POST') {
+    if (!requireAuth(req, res)) return undefined;
+    const body = await readBody(req);
+    // Roy adding a job he took over the phone. The lead time, weekly hours and
+    // day-off rules don't apply — he already agreed the visit — but createRequest
+    // still refuses a slot another live job is holding.
+    const result = booking.createRequest(body, 'admin');
+    if (result.error) return sendJson(res, 400, result, adminHeaders);
+    const confirmed = booking.updateRequest(result.record.id, { status: 'confirmed' });
+    return sendJson(res, 200, { ok: true, record: confirmed.record || result.record }, adminHeaders);
+  }
+
+  if (pathname === '/api/admin/booking/delete' && req.method === 'POST') {
+    if (!requireAuth(req, res)) return undefined;
+    const body = await readBody(req);
+    const result = booking.deleteRequest(String(body.id || ''));
+    if (result.error) return sendJson(res, 400, result, adminHeaders);
+    return sendJson(res, 200, { ok: true }, adminHeaders);
+  }
+
+  if (pathname === '/api/admin/booking/block' && req.method === 'POST') {
+    if (!requireAuth(req, res)) return undefined;
+    const body = await readBody(req);
+    const result = booking.toggleBlocked({ date: String(body.date || ''), block: body.block });
+    if (result.error) return sendJson(res, 400, result, adminHeaders);
+    return sendJson(res, 200, { ok: true, settings: result.settings }, adminHeaders);
+  }
+
+  if (pathname === '/api/admin/booking/test-email' && req.method === 'POST') {
+    if (!requireAuth(req, res)) return undefined;
+    const settings = booking.readSettings();
+    const to = notifyAddress(settings);
+    if (!to) {
+      return sendJson(res, 400, {
+        error: 'No notification address set. Add one below, or set SMTP_TO on the server.',
+      }, adminHeaders);
+    }
+    const sent = await mailer.send({
+      to,
+      subject: 'Wilkin Plumbing — booking notification test',
+      text: 'This is the test email from the booking settings screen.\n\n'
+        + 'If you are reading it, new booking requests will reach you here.',
+    });
+    return sendJson(res, 200, { ok: true, to, ...sent }, adminHeaders);
+  }
+
   return sendJson(res, 404, { error: 'Not found' }, adminHeaders);
 }
 
@@ -360,12 +546,19 @@ const server = http.createServer((req, res) => {
     res.writeHead(400); return res.end('Bad request');
   }
 
+  const onError = (err) => {
+    const status = err.status || 500;
+    if (!res.headersSent) sendJson(res, status, { error: err.message || 'Server error' });
+    else res.end();
+  };
+
   if (pathname === '/admin' || pathname === '/admin/' || pathname.startsWith('/api/admin')) {
-    return handleAdmin(req, res, pathname).catch((err) => {
-      const status = err.status || 500;
-      if (!res.headersSent) sendJson(res, status, { error: err.message || 'Server error' });
-      else res.end();
-    });
+    return handleAdmin(req, res, pathname).catch(onError);
+  }
+
+  // Public booking API — no session, so it is rate limited and honeypotted instead.
+  if (pathname.startsWith('/api/booking')) {
+    return handleBooking(req, res, pathname).catch(onError);
   }
 
   return serveStatic(req, res);
@@ -377,5 +570,8 @@ server.listen(PORT, HOST, () => {
     : auth.setupTokenConfigured() ? 'awaiting first-run setup'
       : 'SETUP LOCKED — set ADMIN_SETUP_TOKEN'})`);
   console.log(`  admin state  ${auth.STATE_DIR}`);
+  console.log(`  bookings     ${booking.DIR} (never committed)`);
+  const mail = mailer.status();
+  console.log(`  booking mail ${mail.configured ? `${mail.host}:${mail.port}` : `off — ${mail.reason}`}`);
   console.log(`  git push     ${github.enabled() ? 'enabled' : 'DISABLED — set GITHUB_TOKEN'}`);
 });

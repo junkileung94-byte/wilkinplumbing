@@ -429,3 +429,118 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
   html.js .nav-pill,html.js .hero-card{opacity:1;transform:none;transition:none}
   *{scroll-behavior:auto !important}
 }
+
+/* ================================================================ booking ==
+   The request-a-booking overlay (site/assets/booking.js). Native <dialog>, so
+   Esc, focus trapping and the backdrop come from the browser. Sized to fit a
+   7-column calendar at 320px without sideways scroll. */
+.bk-dlg{
+  width:min(560px,calc(100vw - 24px));max-width:none;max-height:min(90dvh,860px);
+  padding:0;border:1px solid var(--glass-border-lt);border-radius:var(--r-lg);
+  background:var(--paper);color:var(--ink);
+  font-family:var(--font-body);overflow:hidden;
+  box-shadow:0 40px 90px -30px rgba(3,14,45,.6);
+}
+.bk-dlg::backdrop{background:rgba(4,12,32,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.bk-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:18px 20px;background:var(--navy);color:#fff;
+}
+.bk-title{
+  margin:0;font-family:var(--font-display);font-weight:700;text-transform:uppercase;
+  letter-spacing:.03em;font-size:1.25rem;line-height:1.1;
+}
+.bk-x{
+  flex:none;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.28);
+  background:transparent;color:#fff;font-size:1.3rem;line-height:1;cursor:pointer;
+}
+.bk-x:hover{background:rgba(255,255,255,.14)}
+.bk-body{padding:18px 20px 22px;overflow-y:auto;max-height:calc(min(90dvh,860px) - 70px)}
+.bk-blurb{margin:0 0 16px;color:var(--ink-2);font-size:.95rem;line-height:1.5}
+.bk-sub{
+  margin:0 0 10px;font-family:var(--font-display);text-transform:uppercase;
+  letter-spacing:.03em;font-size:1.05rem;color:var(--navy);
+}
+
+/* ---- calendar ---- */
+.bk-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.bk-month{font-family:var(--font-display);font-size:1.05rem;text-transform:uppercase;letter-spacing:.04em}
+.bk-arrow{
+  width:36px;height:36px;border-radius:50%;border:1px solid var(--glass-border-lt);
+  background:#fff;color:var(--navy);font-size:1.2rem;line-height:1;cursor:pointer;
+}
+.bk-arrow:disabled{opacity:.32;cursor:not-allowed}
+.bk-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.bk-grid-head{margin-bottom:4px}
+.bk-dow{
+  text-align:center;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);padding-block:2px;
+}
+.bk-day,.bk-pad{aspect-ratio:1;min-width:0}
+.bk-pad{visibility:hidden}
+.bk-day{
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--glass-border-lt);border-radius:var(--r-sm);
+  background:#fff;color:var(--navy);font:inherit;font-size:.95rem;font-variant-numeric:tabular-nums;
+  cursor:pointer;transition:background var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out);
+}
+.bk-day:hover:not(:disabled){background:oklch(69.3% 0.206 43 / .14);border-color:var(--orange)}
+.bk-day.is-on{background:var(--orange);border-color:var(--orange);color:var(--navy);font-weight:700}
+.bk-day.is-off{background:oklch(94% 0.004 250);color:var(--muted);cursor:not-allowed;text-decoration:line-through}
+.bk-day.is-out{background:transparent;border-color:transparent;color:oklch(80% 0.01 258);cursor:default}
+.bk-day:focus-visible,.bk-opt:focus-visible,.bk-arrow:focus-visible,.bk-x:focus-visible{
+  outline:3px solid var(--focus);outline-offset:2px}
+.bk-key{margin:10px 0 0;font-size:.8rem;color:var(--muted)}
+
+/* ---- slot choice ---- */
+.bk-slots{margin-top:20px;padding-top:18px;border-top:1px solid var(--glass-border-lt)}
+.bk-opts{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.bk-opt{
+  display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;
+  padding:12px 14px;border:1px solid var(--glass-border-lt);border-radius:var(--r-md);
+  background:#fff;color:var(--ink);font:inherit;cursor:pointer;
+}
+.bk-opt b{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.03em;color:var(--navy)}
+.bk-opt span{font-size:.88rem;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.bk-opt em{font-style:normal;font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.bk-opt:hover:not(:disabled){border-color:var(--orange)}
+.bk-opt.is-on{background:var(--orange);border-color:var(--orange)}
+.bk-opt.is-on b,.bk-opt.is-on span{color:var(--navy)}
+.bk-opt.is-full{background:oklch(94% 0.004 250);color:var(--muted);cursor:not-allowed}
+.bk-opt.is-full b{color:var(--muted)}
+
+/* ---- details ---- */
+.bk-form{margin-top:20px;padding-top:18px;border-top:1px solid var(--glass-border-lt)}
+.bk-pair{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.bk-field{display:block;margin-bottom:12px}
+.bk-label{
+  display:block;margin-bottom:5px;font-size:.78rem;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);
+}
+.bk-field input,.bk-field textarea{
+  width:100%;padding:11px 13px;border:1px solid var(--glass-border-lt);border-radius:var(--r-sm);
+  background:#fff;color:var(--ink);font:inherit;font-size:1rem;
+}
+.bk-field textarea{resize:vertical;min-height:76px;line-height:1.5}
+.bk-field input:focus,.bk-field textarea:focus{
+  outline:3px solid var(--focus);outline-offset:1px;border-color:transparent}
+/* honeypot: reachable to a bot, invisible and unfocusable to a person */
+.bk-trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.bk-note{margin:0 0 12px;padding:10px 12px;border-radius:var(--r-sm);font-size:.9rem}
+.bk-note.is-bad{background:oklch(63% 0.19 27 / .12);border:1px solid oklch(63% 0.19 27 / .4);color:oklch(42% 0.16 27)}
+.bk-note.is-ok{background:oklch(70% 0.15 150 / .14);border:1px solid oklch(70% 0.15 150 / .4);color:oklch(38% 0.12 150)}
+.bk-send{width:100%;margin-top:4px}
+.bk-done{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.bk-done p{margin:0;color:var(--ink-2);line-height:1.55}
+.bk-ref{font-family:var(--font-mono,ui-monospace,monospace);letter-spacing:.12em;color:var(--navy)!important}
+.bk-hide{display:none!important}
+
+@media (max-width:380px){
+  .bk-body{padding:16px 14px 20px}
+  .bk-head{padding:16px 14px}
+  .bk-grid{gap:3px}
+  .bk-day{font-size:.86rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .bk-day,.bk-opt,.bk-arrow{transition:none}
+}
