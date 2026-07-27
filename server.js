@@ -18,6 +18,11 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+/* Must run before anything reads process.env at load time (lib/auth.js resolves its
+ * state directory that way). Fills in from a .env file only if the host did not
+ * already provide the variable. */
+const dotenv = require('./lib/env').load();
+
 const auth = require('./lib/auth');
 const booking = require('./lib/booking');
 const editor = require('./lib/editor');
@@ -359,6 +364,7 @@ async function handleAdmin(req, res, pathname) {
       sawPassword: !!String(process.env.ADMIN_PASSWORD || ''),
       passwordLength: String(process.env.ADMIN_PASSWORD || '').length,
       result: bootstrap.reason || (bootstrap.applied ? 'applied' : 'unknown'),
+      dotenv: dotenv.loaded ? `read ${dotenv.keys.length} value(s) from .env` : 'no .env file',
     };
     return sendJson(res, 200, {
       configured: auth.isConfigured(),
@@ -581,6 +587,7 @@ const bootstrap = auth.bootstrapFromEnv();
 
 server.listen(PORT, HOST, () => {
   console.log(`Wilkin Plumbing site on http://${HOST}:${PORT}`);
+  if (dotenv.loaded) console.log(`  .env         ${dotenv.keys.length} value(s): ${dotenv.keys.join(', ') || 'none new'}`);
   if (bootstrap.applied) {
     console.log(`  admin login  ${bootstrap.replaced ? 'updated' : 'created'} from `
       + `ADMIN_USER/ADMIN_PASSWORD as "${bootstrap.user}"`);
