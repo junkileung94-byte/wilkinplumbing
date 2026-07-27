@@ -13,6 +13,31 @@ admin/app.html       the admin UI (setup → login → editor)
 content/locations.json   per-municipality copy for the location pages
 ```
 
+## The editor
+
+There is one editor, and it is the site itself. `/admin` shows the real page in a frame
+at a real device width (desktop 1280 / mobile 420, scaled to fit the screen), and you
+edit it where it stands:
+
+- **Words** — click any text and type. Highlight some and use **B** / *I* / <u>U</u>, or
+  the Size / Font / Colour menus, which wrap only the highlighted words in the site's own
+  tokens (`var(--font-display)`, `var(--orange)`…) so a choice renders exactly as the
+  live page will. Enter is a line break, paste comes in as plain text, Escape puts the
+  original wording back.
+- **Photos** — click any photo to pick a new one from the library, then frame it. The
+  cropper opens at the shape the page actually shows that photo at, with free / 16:9 /
+  4:3 / 1:1 / 3:4 / 4:5 as alternatives, a flip, and "use the whole photo". Cutting and
+  shrinking (1600px longest side) happen in the browser, so the server needs no image
+  library; a PNG stays a PNG, so the logo keeps its transparent background.
+
+Nothing is live until **Publish changes**: edits stage up, the preview shows them in
+green, and one publish writes them, rebuilds the location pages and makes a single
+commit. Reloading the preview keeps staged edits; "Discard changes" throws them away.
+Anything carrying a marker that the preview does not show gets a plain editor beneath it,
+so nothing becomes unreachable.
+
+Bookings are a separate tab and save as you go — they never touch the repo.
+
 ## The admin
 
 `https://wilkinplumbing.ca/admin` — public URL, password protected.

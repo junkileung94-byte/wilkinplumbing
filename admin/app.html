@@ -20,6 +20,7 @@
   h1,h2,h3{margin:0 0 .5em;font-weight:700;letter-spacing:.01em}
   h1{font-size:1.5rem} h2{font-size:1.15rem} h3{font-size:1rem}
   .wrap{max-width:960px;margin:0 auto;padding:24px 18px 80px}
+  .wrap.tight{padding:14px 18px 0}
   .center{max-width:440px;margin:8vh auto;padding:0 18px}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
   .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -48,7 +49,7 @@
     position:sticky;top:0;z-index:5;background:rgba(7,13,29,.94);border-bottom:1px solid var(--line);
     backdrop-filter:blur(8px)}
   header.bar .wrap{padding:14px 18px}
-  .tabs{display:flex;gap:8px;margin:18px 0 6px}
+  .tabs{display:flex;gap:8px;margin:14px 0 6px}
   .tabs button{background:transparent;border:1px solid var(--line);color:var(--dim);font-weight:600}
   .tabs button[aria-selected="true"]{background:rgba(244,119,46,.16);border-color:var(--orange);color:#fff}
   .field{border-top:1px solid var(--line);padding:16px 0}
@@ -70,7 +71,50 @@
   dialog::backdrop{background:rgba(0,0,0,.6)}
   .savebar{position:fixed;left:0;right:0;bottom:0;background:rgba(7,13,29,.96);
            border-top:1px solid var(--line);padding:12px 18px;z-index:6}
-  .savebar .wrap{padding:0;display:flex;gap:14px;align-items:center;justify-content:space-between}
+  .savebar .wrap{padding:0;max-width:1400px;display:flex;gap:14px;align-items:center;
+                 justify-content:space-between}
+
+  /* ---- the one editor: live site preview, edited in place ---- */
+  .edwrap{max-width:1400px;margin:0 auto;padding:0 14px}
+  .edbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px;margin-top:6px;
+         background:var(--panel);border:1px solid var(--line);border-radius:12px}
+  .edbar .sep{width:1px;align-self:stretch;background:var(--line)}
+  .chips{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .chip{background:transparent;color:var(--dim);border:0;border-radius:0;padding:7px 13px;
+        font-size:.82rem;font-weight:600;cursor:pointer}
+  .chip:hover{background:rgba(255,255,255,.06)}
+  .chip.on{background:var(--orange);color:#12203f}
+  .fbtn{background:transparent;border:1px solid var(--line);color:var(--ink);width:34px;height:34px;
+        border-radius:9px;padding:0;font-size:.95rem;display:grid;place-items:center}
+  .fbtn:hover{background:rgba(255,255,255,.08);border-color:var(--orange)}
+  .fsel{width:auto;min-width:96px;padding:7px 9px;font-size:.84rem;border-radius:9px}
+  .edstage{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:14px;margin-top:10px;
+           padding:8px;display:flex;justify-content:center;align-items:flex-start;overflow:hidden}
+  .edscaler{position:relative}
+  .edframewrap{position:absolute;top:0;left:0;transform-origin:top left;background:#fff;
+               border-radius:10px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+  #ed-frame{border:0;display:block;background:#fff}
+  #toast{position:fixed;left:50%;bottom:74px;transform:translateX(-50%);z-index:40;
+         background:var(--navy-900);border:1px solid var(--line);color:var(--ink);
+         padding:9px 16px;border-radius:999px;font-size:.88rem;opacity:0;transition:opacity .2s;
+         pointer-events:none;max-width:90vw}
+  #toast.show{opacity:1}
+
+  /* ---- cropper ---- */
+  #cropdlg{max-width:min(96vw,980px)}
+  .crop-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  .aspects{display:flex;gap:6px;flex-wrap:wrap}
+  .aspects .chip{border:1px solid var(--line);border-radius:999px}
+  .cropstage-wrap{margin:14px 0;display:grid;place-items:center;background:rgba(0,0,0,.35);
+                  border-radius:12px;padding:10px}
+  .cropstage{position:relative;touch-action:none;user-select:none;line-height:0}
+  .cropstage img{display:block;max-width:min(88vw,900px);max-height:56vh}
+  .rect{position:absolute;border:2px solid var(--orange);box-shadow:0 0 0 9999px rgba(0,0,0,.55);
+        cursor:move}
+  .rect .hd{position:absolute;right:-9px;bottom:-9px;width:18px;height:18px;border-radius:50%;
+            background:var(--orange);cursor:nwse-resize}
+  .crop-foot{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .dims{font-size:.8rem;color:var(--dim);font-variant-numeric:tabular-nums}
 
   /* ---- bookings ---- */
   .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:700;
@@ -163,7 +207,7 @@
 <!-- ============================ EDITOR ============================ -->
 <section id="view-editor" class="hide">
   <header class="bar">
-    <div class="wrap row spread">
+    <div class="wrap row spread" style="max-width:1400px">
       <div>
         <b>Wilkin Plumbing</b> <span class="muted">· site editor</span>
         <div class="muted" id="who"></div>
@@ -175,26 +219,68 @@
     </div>
   </header>
 
-  <div class="wrap">
+  <div class="edwrap">
     <div id="git-warning" class="msg warn hide"></div>
     <div class="tabs" role="tablist">
-      <button id="tab-text" role="tab" aria-selected="true">Text</button>
-      <button id="tab-images" role="tab" aria-selected="false">Photos</button>
+      <button id="tab-site" role="tab" aria-selected="true">The site</button>
       <button id="tab-booking" role="tab" aria-selected="false">Bookings<span id="tab-booking-badge" class="badge hide">0</span></button>
     </div>
+    <div id="result"></div>
+  </div>
 
-    <div id="pane-text" class="panel"></div>
-
-    <div id="pane-images" class="panel hide">
-      <div class="row spread">
-        <h2 style="margin:0">Photos on the site</h2>
-        <button class="ghost small" id="upload-btn">Upload a photo</button>
+  <!-- one editor: the real page, with its text and its photos edited in place -->
+  <div id="pane-site" class="edwrap">
+    <div class="edbar">
+      <div class="chips" id="ed-width">
+        <button class="chip on" data-w="desktop">🖥 Desktop</button>
+        <button class="chip" data-w="mobile">📱 Mobile</button>
       </div>
-      <p class="muted">Pick a slot to swap its photo. Large images are shrunk to 1600px before upload.</p>
-      <div class="slots" id="slots"></div>
+      <span class="sep"></span>
+      <button class="fbtn" type="button" data-fmt="bold" title="Bold (select text first)"><b>B</b></button>
+      <button class="fbtn" type="button" data-fmt="italic" title="Italic (select text first)"><i>I</i></button>
+      <button class="fbtn" type="button" data-fmt="underline" title="Underline (select text first)"><u>U</u></button>
+      <select class="fsel" id="ed-size" title="Size of the highlighted text only">
+        <option value="">Size…</option>
+        <option value="0.8em">Small</option>
+        <option value="1.25em">Large</option>
+        <option value="1.7em">X-Large</option>
+        <option value="2.4em">Huge</option>
+        <option value="reset">Reset size</option>
+      </select>
+      <select class="fsel" id="ed-font" title="Font of the highlighted text only — brand fonts only">
+        <option value="">Font…</option>
+        <option value="var(--font-display)">Display · Barlow Condensed</option>
+        <option value="var(--font-body)">Body · Geist</option>
+        <option value="reset">Reset font</option>
+      </select>
+      <select class="fsel" id="ed-colour" title="Colour of the highlighted text only — brand palette">
+        <option value="">Colour…</option>
+        <option value="var(--orange)">Orange</option>
+        <option value="var(--navy)">Navy</option>
+        <option value="var(--ink)">Ink</option>
+        <option value="var(--muted)">Muted grey</option>
+        <option value="var(--white)">White</option>
+        <option value="reset">Reset colour</option>
+      </select>
+      <span class="sep"></span>
+      <button class="ghost small" id="upload-btn">Upload a photo</button>
+      <button class="ghost small" id="ed-reload" title="Reload the preview — staged changes are kept">Reload preview</button>
+      <span class="muted" style="flex:1;min-width:180px">Click any words to edit them · click any photo to change it</span>
     </div>
 
-    <div id="pane-booking" class="panel hide">
+    <div class="edstage" id="ed-stage">
+      <div class="edscaler" id="ed-scaler">
+        <div class="edframewrap" id="ed-framewrap">
+          <iframe id="ed-frame" title="The live page — click any text or photo to edit it"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div id="pane-extra" class="panel hide" style="margin:12px 0 90px"></div>
+  </div>
+
+  <div id="pane-booking" class="wrap hide">
+    <div class="panel">
       <div class="row spread">
         <h2 style="margin:0">Bookings</h2>
         <div class="row">
@@ -213,23 +299,50 @@
       <div id="bk-schedule" class="hide"></div>
       <div id="bk-settings" class="hide"></div>
     </div>
-
-    <div id="result"></div>
   </div>
 
   <div class="savebar">
     <div class="wrap">
       <span class="muted" id="pending">No changes yet</span>
-      <button id="publish" disabled>Publish changes</button>
+      <div class="row">
+        <button class="ghost small hide" id="discard">Discard changes</button>
+        <button id="publish" disabled>Publish changes</button>
+      </div>
     </div>
   </div>
 </section>
 
 <dialog id="picker">
   <div class="row spread"><h2 style="margin:0">Choose a photo</h2>
-    <button class="ghost small" id="picker-close">Close</button></div>
+    <div class="row">
+      <button class="ghost small" id="picker-upload">Upload a photo</button>
+      <button class="ghost small" id="picker-close">Close</button>
+    </div>
+  </div>
   <p class="muted" id="picker-for"></p>
   <div class="lib" id="lib"></div>
+</dialog>
+
+<dialog id="cropdlg">
+  <div class="crop-head">
+    <h2 style="margin:0" id="crop-title">Frame the photo</h2>
+    <div class="row">
+      <button class="ghost small" id="crop-flip">⇄ Flip</button>
+      <button class="ghost small" id="crop-full">Use the whole photo</button>
+      <button class="ghost small" id="crop-close">Cancel</button>
+    </div>
+  </div>
+  <div class="aspects" id="aspects" style="margin-top:10px"></div>
+  <div class="cropstage-wrap">
+    <div class="cropstage" id="cropstage">
+      <img id="crop-img" alt="">
+      <div class="rect" id="crop-rect"><div class="hd" id="crop-handle"></div></div>
+    </div>
+  </div>
+  <div class="crop-foot">
+    <span class="dims" id="crop-dims"></span>
+    <button id="crop-apply">Use this photo</button>
+  </div>
 </dialog>
 
 <dialog id="bk-new">
@@ -256,12 +369,14 @@
 </dialog>
 
 <input type="file" id="file-input" accept="image/*" class="hide">
+<div id="toast"></div>
 
 <script>
 (function () {
   'use strict';
   var state = {csrf: null, texts: [], slots: [], library: [], dirtyText: {}, pendingSlots: {},
-               pickTarget: null, uploadMode: 'slot'};
+               slotBox: {}, pickTarget: null, width: 'desktop', activeEl: null, lastRange: null,
+               tab: 'site'};
 
   function $(id) { return document.getElementById(id); }
   function show(view) {
@@ -276,6 +391,19 @@
     d.className = 'msg ' + (kind || 'bad');
     d.textContent = text;
     el.appendChild(d);
+  }
+  function toast(text) {
+    var t = $('toast');
+    t.textContent = text;
+    t.classList.add('show');
+    clearTimeout(t._h);
+    t._h = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+  function node(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
   }
   function api(path, opts) {
     opts = opts || {};
@@ -362,97 +490,561 @@
   });
 
   // ---------------------------------------------------------- content ---
-  function loadContent() {
-    api('/api/admin/content').then(function (r) {
+  /* The editor works against the page itself. This list is the safety net: anything
+   * carrying a marker that the preview does not show (a slot only used on a page we
+   * do not preview, say) still gets a plain editor under the preview. */
+  function loadContent(keepFrame) {
+    return api('/api/admin/content').then(function (r) {
       if (r.status === 401) { show('view-login'); return; }
       state.texts = r.body.texts || [];
       state.slots = r.body.slots || [];
       state.library = r.body.library || [];
-      renderTexts();
-      renderSlots();
+      if (!keepFrame) loadFrame();
     });
   }
 
-  function renderTexts() {
-    var pane = $('pane-text');
-    pane.innerHTML = '';
-    state.texts.forEach(function (t) {
-      var wrap = document.createElement('div');
-      wrap.className = 'field';
-      var code = document.createElement('code');
-      code.textContent = t.id;
+  // ------------------------------------------------- the live preview ---
+  var EDIT_CSS = [
+    'html{scroll-behavior:auto !important}',
+    /* one-shot entrances would leave half the page invisible in an editor */
+    '.intro{display:none !important}',
+    '.reveal{opacity:1 !important;transform:none !important;animation:none !important}',
+    '[data-edit]{outline:1px dashed transparent;outline-offset:3px;border-radius:3px;cursor:text;',
+      'transition:outline-color .12s,background .12s}',
+    '[data-edit]:hover{outline-color:#f4772e;background:rgba(244,119,46,.08)}',
+    '[data-edit][contenteditable]:focus{outline:2px solid #f4772e !important;',
+      'background:rgba(244,119,46,.12)}',
+    '[data-edit]:empty::before{content:"empty — click to add words";opacity:.5;font-style:italic}',
+    '[data-edit].ed-staged{outline:2px solid #43c07a !important}',
+    '[data-slot]{cursor:pointer}',
+    '[data-slot]:hover{outline:3px solid #f4772e;outline-offset:-3px}',
+    '[data-slot].ed-staged{outline:3px solid #43c07a;outline-offset:-3px}'
+  ].join('');
+
+  function frameDoc() {
+    try { return $('ed-frame').contentDocument; } catch (err) { return null; }
+  }
+
+  function loadFrame() {
+    state.activeEl = null;
+    state.lastRange = null;
+    var f = $('ed-frame');
+    fit();
+    f.onload = function () { wireFrame(); fit(); };
+    f.src = '/?edit=' + Date.now();
+  }
+
+  /* Render at a true device width, then scale the whole frame down to fit whatever
+   * screen the editor is on — real layout, no squashing, no sideways scroll. */
+  function fit() {
+    var stage = $('ed-stage');
+    if (state.tab !== 'site') return;
+    var top = stage.getBoundingClientRect().top;
+    var bar = document.querySelector('.savebar');
+    var avail = window.innerHeight - top - (bar ? bar.offsetHeight : 0) - 16;
+    stage.style.height = Math.max(360, avail) + 'px';
+
+    var logical = state.width === 'mobile' ? 420 : 1280;
+    var availW = stage.clientWidth - 18;
+    var availH = stage.clientHeight - 18;
+    var s = Math.min(1, availW / logical);
+    var frame = $('ed-frame');
+    frame.style.width = logical + 'px';
+    frame.style.height = (availH / s) + 'px';
+    $('ed-framewrap').style.transform = 'scale(' + s + ')';
+    $('ed-scaler').style.width = (logical * s) + 'px';
+    $('ed-scaler').style.height = availH + 'px';
+  }
+  window.addEventListener('resize', fit);
+
+  function wireFrame() {
+    var f = $('ed-frame');
+    var doc = frameDoc();
+    var win = f.contentWindow;
+    if (!doc || !doc.body) return;
+
+    var st = doc.createElement('style');
+    st.textContent = EDIT_CSS;
+    doc.head.appendChild(st);
+    doc.querySelectorAll('details').forEach(function (d) { d.open = true; });   // reach the FAQ copy
+    doc.body.classList.add('content-in');            // the load intro is skipped, so show the page
+    var intro = doc.querySelector('.intro');
+    if (intro && intro.parentNode) intro.parentNode.removeChild(intro);
+
+    /* In edit mode nothing navigates: a link, a booking button or an accordion that
+     * closed under the cursor would take the words you were about to edit with it. */
+    doc.addEventListener('click', function (ev) {
+      if (!ev.target || !ev.target.closest) return;
+      var slot = ev.target.closest('[data-slot]');
+      if (slot && !ev.target.closest('[data-edit]')) {
+        ev.preventDefault(); ev.stopPropagation();
+        openPicker(slot.getAttribute('data-slot'));
+        return;
+      }
+      if (ev.target.closest('a[href]')) ev.preventDefault();
+      var sm = ev.target.closest('summary');
+      if (sm) {
+        ev.preventDefault();
+        var d = sm.parentElement;
+        if (d && d.tagName === 'DETAILS') d.open = true;   // only ever opens
+      }
+      var btn = ev.target.closest('button,[data-book]');
+      if (btn && !ev.target.closest('[data-edit]')) { ev.preventDefault(); ev.stopPropagation(); }
+    }, true);
+
+    doc.querySelectorAll('[data-slot]').forEach(function (el) {
+      el.title = 'Click to change this photo';
+      measureSlot(el.getAttribute('data-slot'));
+    });
+
+    doc.querySelectorAll('[data-edit]').forEach(function (el) {
+      el.dataset.edOrig = el.innerHTML;               // what is published right now
+      el.setAttribute('contenteditable', 'true');
+      el.setAttribute('spellcheck', 'true');
+      el.addEventListener('focus', function () { state.activeEl = el; });
+      el.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' && !ev.shiftKey) {     // Enter is a line break, not a new block
+          ev.preventDefault();
+          try {
+            if (!doc.execCommand('insertLineBreak')) doc.execCommand('insertHTML', false, '<br>');
+          } catch (err) { doc.execCommand('insertHTML', false, '<br>'); }
+        }
+        if ((ev.key === ' ' || ev.key === 'Spacebar') && el.tagName === 'SUMMARY') {
+          ev.preventDefault();                        // space would toggle the accordion shut
+          doc.execCommand('insertText', false, ' ');
+        }
+        if (ev.key === 'Escape') { el.innerHTML = el.dataset.edOrig || el.innerHTML; el.blur(); }
+      });
+      el.addEventListener('paste', function (ev) {    // paste as plain text — no pasted styling
+        ev.preventDefault();
+        var text = ((ev.clipboardData || win.clipboardData).getData('text/plain') || '')
+          .replace(/\r\n?/g, '\n');
+        var parts = text.split('\n');
+        doc.execCommand('insertText', false, parts[0]);
+        for (var i = 1; i < parts.length; i += 1) {
+          try {
+            if (!doc.execCommand('insertLineBreak')) doc.execCommand('insertHTML', false, '<br>');
+          } catch (err) { doc.execCommand('insertHTML', false, '<br>'); }
+          if (parts[i]) doc.execCommand('insertText', false, parts[i]);
+        }
+      });
+      el.addEventListener('blur', function () { stageText(el); });
+    });
+
+    // remember the last real selection inside the page, so the toolbar can act on it
+    var track = function () {
+      try {
+        var sel = doc.getSelection();
+        if (!sel || !sel.rangeCount || sel.isCollapsed) return;
+        var r = sel.getRangeAt(0);
+        var a = r.commonAncestorContainer;
+        var host = a.nodeType === 1 ? a : a.parentElement;
+        var ed = host && host.closest ? host.closest('[data-edit]') : null;
+        if (ed) { state.lastRange = r.cloneRange(); state.activeEl = ed; }
+      } catch (err) { /* selection gone — nothing to remember */ }
+    };
+    doc.addEventListener('mouseup', track);
+    doc.addEventListener('keyup', track);
+
+    applyStaged(doc);
+    renderExtras(doc);
+  }
+
+  /* Unpublished changes are the editor's, not the file's — paint them back on after
+   * every preview reload so what you see is what Publish will write. */
+  function applyStaged(doc) {
+    Object.keys(state.dirtyText).forEach(function (id) {
+      doc.querySelectorAll('[data-edit="' + cssEscape(id) + '"]').forEach(function (el) {
+        el.innerHTML = state.dirtyText[id];
+        el.classList.add('ed-staged');
+      });
+    });
+    Object.keys(state.pendingSlots).forEach(function (slot) {
+      doc.querySelectorAll('[data-slot="' + cssEscape(slot) + '"]').forEach(function (el) {
+        el.src = state.pendingSlots[slot];
+        el.classList.add('ed-staged');
+      });
+    });
+  }
+
+  /* The shape the page actually shows this photo at — that is the crop the cropper
+   * offers first, so what you frame is exactly what visitors see. */
+  function measureSlot(slot) {
+    var doc = frameDoc();
+    if (!doc || !slot) return;
+    var el = doc.querySelector('[data-slot="' + cssEscape(slot) + '"]');
+    if (!el) return;
+    var box = el.getBoundingClientRect();
+    if (box.width > 8 && box.height > 8) state.slotBox[slot] = {w: box.width, h: box.height};
+  }
+
+  function cssEscape(v) {
+    return (window.CSS && CSS.escape) ? CSS.escape(v) : String(v).replace(/"/g, '\\"');
+  }
+
+  function cleanHtml(html) {
+    return String(html == null ? '' : html)
+      .replace(/ /g, ' ')            // nbsp back to a plain space
+      .replace(/<br[^>]*>/gi, '<br>')
+      .replace(/^\s+|\s+$/g, '');
+  }
+
+  function stageText(el) {
+    var id = el.getAttribute('data-edit');
+    var now = cleanHtml(el.innerHTML);
+    var orig = cleanHtml(el.dataset.edOrig || '');
+    if (now === orig) {
+      delete state.dirtyText[id];
+      el.classList.remove('ed-staged');
+    } else {
+      state.dirtyText[id] = now;
+      el.classList.add('ed-staged');
+      // an id can appear more than once on the page — keep every copy in step
+      var doc = frameDoc();
+      if (doc) {
+        doc.querySelectorAll('[data-edit="' + cssEscape(id) + '"]').forEach(function (other) {
+          if (other !== el) { other.innerHTML = now; other.classList.add('ed-staged'); }
+        });
+      }
+    }
+    updatePending();
+  }
+
+  /* ---- the formatting toolbar, acting on the selection inside the preview ---- */
+  function withSelection(fn) {
+    var doc = frameDoc();
+    if (!doc || !state.activeEl) { toast('Highlight some words first.'); return; }
+    $('ed-frame').contentWindow.focus();
+    var sel = doc.getSelection();
+    if (state.lastRange) {
+      try { sel.removeAllRanges(); sel.addRange(state.lastRange); } catch (err) { /* stale */ }
+    }
+    if (!sel.rangeCount || sel.isCollapsed) { toast('Highlight some words first.'); return; }
+    fn(doc, sel);
+    stageText(state.activeEl);
+  }
+
+  function format(cmd) {
+    withSelection(function (doc, sel) {
+      try { doc.execCommand('styleWithCSS', false, false); } catch (err) { /* older engine */ }
+      try { doc.execCommand(cmd, false, null); } catch (err) { /* nothing to do */ }
+      if (sel.rangeCount) state.lastRange = sel.getRangeAt(0).cloneRange();
+    });
+  }
+  document.querySelectorAll('.edbar .fbtn').forEach(function (b) {
+    b.addEventListener('mousedown', function (ev) { ev.preventDefault(); });   // keep the selection
+    b.addEventListener('click', function () { format(b.dataset.fmt); });
+  });
+
+  /* Wrap ONLY the highlighted words in a span carrying one inline style, using the
+   * site's own tokens so the choice always renders exactly as the site would.
+   * "Reset" strips that one property again and unwraps whatever it emptied. */
+  function styleSelection(prop, value) {
+    withSelection(function (doc, sel) {
+      var range = sel.getRangeAt(0);
+      var host = state.activeEl;
+      if (value === 'reset') {
+        [].slice.call(host.querySelectorAll('span[style*="' + prop + '"]')).forEach(function (s) {
+          if (!range.intersectsNode(s)) return;
+          s.style.removeProperty(prop);
+          if (!s.getAttribute('style')) {
+            var p = s.parentNode;
+            while (s.firstChild) p.insertBefore(s.firstChild, s);
+            p.removeChild(s);
+          }
+        });
+      } else {
+        var span = doc.createElement('span');
+        span.style.setProperty(prop, value);
+        try { span.appendChild(range.extractContents()); range.insertNode(span); }
+        catch (err) { toast('Highlight words inside one paragraph.'); return; }
+        var nr = doc.createRange();
+        nr.selectNodeContents(span);
+        sel.removeAllRanges();
+        sel.addRange(nr);
+        state.lastRange = nr.cloneRange();
+      }
+      try { host.normalize(); } catch (err) { /* fine */ }
+    });
+  }
+  [['ed-size', 'font-size'], ['ed-font', 'font-family'], ['ed-colour', 'color']]
+    .forEach(function (pair) {
+      var el = $(pair[0]);
+      el.addEventListener('change', function () {
+        if (el.value) styleSelection(pair[1], el.value);
+        el.value = '';
+      });
+    });
+
+  document.querySelectorAll('#ed-width .chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.width = b.dataset.w;
+      document.querySelectorAll('#ed-width .chip').forEach(function (x) {
+        x.classList.toggle('on', x.dataset.w === state.width);
+      });
+      fit();
+    });
+  });
+  $('ed-reload').addEventListener('click', function () { loadFrame(); });
+
+  /* ---- anything the preview does not show, edited the plain way ---- */
+  function renderExtras(doc) {
+    var box = $('pane-extra');
+    box.innerHTML = '';
+    var missingTexts = state.texts.filter(function (t) {
+      return !doc.querySelector('[data-edit="' + cssEscape(t.id) + '"]');
+    });
+    var missingSlots = state.slots.filter(function (s) {
+      return !doc.querySelector('[data-slot="' + cssEscape(s.slot) + '"]');
+    });
+    if (!missingTexts.length && !missingSlots.length) { box.classList.add('hide'); return; }
+    box.classList.remove('hide');
+    box.appendChild(node('h2', null, 'Not on this page'));
+    box.appendChild(node('p', 'muted', 'These are in the site but not in the preview above, so '
+      + 'they are edited here instead.'));
+
+    missingTexts.forEach(function (t) {
+      var wrap = node('div', 'field');
+      var code = node('code', null, t.id);
       var ta = document.createElement('textarea');
-      ta.value = t.html;
+      ta.value = state.dirtyText[t.id] != null ? state.dirtyText[t.id] : t.html;
       ta.setAttribute('aria-label', t.id);
       ta.addEventListener('input', function () {
-        if (ta.value === t.html) delete state.dirtyText[t.id];
-        else state.dirtyText[t.id] = ta.value;
-        wrap.classList.toggle('dirty', ta.value !== t.html);
+        if (cleanHtml(ta.value) === cleanHtml(t.html)) delete state.dirtyText[t.id];
+        else state.dirtyText[t.id] = cleanHtml(ta.value);
+        wrap.classList.toggle('dirty', cleanHtml(ta.value) !== cleanHtml(t.html));
         updatePending();
       });
       wrap.appendChild(code);
       wrap.appendChild(ta);
-      pane.appendChild(wrap);
+      box.appendChild(wrap);
     });
+
+    if (missingSlots.length) {
+      var slots = node('div', 'slots');
+      slots.style.marginTop = '14px';
+      missingSlots.forEach(function (s) {
+        var card = node('div', 'slot');
+        var img = document.createElement('img');
+        img.alt = '';
+        img.src = state.pendingSlots[s.slot] || (s.src ? '/' + s.src : '');
+        var meta = node('div', 'meta');
+        meta.appendChild(node('b', null, s.slot));
+        var btn = node('button', 'ghost small',
+          state.pendingSlots[s.slot] ? 'Replace (staged)' : 'Change');
+        btn.addEventListener('click', function () { openPicker(s.slot); });
+        meta.appendChild(btn);
+        card.appendChild(img);
+        card.appendChild(meta);
+        slots.appendChild(card);
+      });
+      box.appendChild(slots);
+    }
   }
 
-  function renderSlots() {
-    var box = $('slots');
-    box.innerHTML = '';
-    state.slots.forEach(function (s) {
-      var card = document.createElement('div');
-      card.className = 'slot';
-      var img = document.createElement('img');
-      img.alt = '';
-      img.src = state.pendingSlots[s.slot] || (s.src ? '/' + s.src : '');
-      var meta = document.createElement('div');
-      meta.className = 'meta';
-      var b = document.createElement('b');
-      b.textContent = s.slot;
-      var btn = document.createElement('button');
-      btn.className = 'ghost small';
-      btn.textContent = state.pendingSlots[s.slot] ? 'Replace (staged)' : 'Change';
-      btn.addEventListener('click', function () { openPicker(s.slot); });
-      meta.appendChild(b);
-      meta.appendChild(btn);
-      card.appendChild(img);
-      card.appendChild(meta);
-      box.appendChild(card);
-    });
-  }
-
-  // ----------------------------------------------------------- picker ---
+  // ----------------------------------------------------------- photos ---
   function openPicker(slot) {
     state.pickTarget = slot;
-    $('picker-for').textContent = 'Replacing: ' + slot;
+    measureSlot(slot);              // the shape it is shown at right now, laid out and loaded
+    $('picker-for').textContent = 'Changing the photo in: ' + slot;
+    renderLibrary();
+    $('picker').showModal();
+  }
+  function renderLibrary() {
     var lib = $('lib');
     lib.innerHTML = '';
+    if (!state.library.length) {
+      lib.appendChild(node('p', 'muted', 'The photo library is empty — upload one.'));
+      return;
+    }
     state.library.forEach(function (item) {
       var b = document.createElement('button');
       var im = document.createElement('img');
       im.src = '/api/admin/media/' + encodeURIComponent(item.file);
       im.alt = item.file;
+      im.title = item.file;
       im.loading = 'lazy';
       b.appendChild(im);
-      b.addEventListener('click', function () { chooseLibrary(item.file); });
+      b.addEventListener('click', function () { $('picker').close(); openCrop(item.file); });
       lib.appendChild(b);
     });
-    $('picker').showModal();
   }
   $('picker-close').addEventListener('click', function () { $('picker').close(); });
+  $('picker-upload').addEventListener('click', function () { $('file-input').click(); });
 
-  function chooseLibrary(file) {
-    shrink('/api/admin/media/' + encodeURIComponent(file)).then(function (dataUrl) {
-      state.pendingSlots[state.pickTarget] = dataUrl;
-      $('picker').close();
-      renderSlots();
-      updatePending();
+  /* ---- the cropper: frame the photo to the shape the page actually shows ---- */
+  var crop = {file: null, aspect: 0, flip: false, rect: {x: 0, y: 0, w: 10, h: 10}, drag: null};
+
+  function aspectChoices() {
+    var box = state.slotBox[state.pickTarget];
+    var list = [];
+    if (box) list.push(['This photo’s shape on the page', box.w / box.h]);
+    return list.concat([['Free', 0], ['16 : 9', 16 / 9], ['4 : 3', 4 / 3], ['1 : 1', 1],
+      ['3 : 4', 3 / 4], ['4 : 5', 4 / 5]]);
+  }
+  function drawAspects() {
+    var el = $('aspects');
+    el.innerHTML = '';
+    aspectChoices().forEach(function (a) {
+      var b = node('button', 'chip' + (Math.abs(crop.aspect - a[1]) < 0.001 ? ' on' : ''), a[0]);
+      b.addEventListener('click', function () { crop.aspect = a[1]; drawAspects(); fitRect(); });
+      el.appendChild(b);
     });
   }
+  function imgBox() {
+    var im = $('crop-img');
+    return {w: im.clientWidth, h: im.clientHeight};
+  }
+  function fitRect() {
+    var b = imgBox();
+    if (crop.aspect > 0) {
+      var w = b.w;
+      var h = w / crop.aspect;
+      if (h > b.h) { h = b.h; w = h * crop.aspect; }
+      w *= 0.94; h *= 0.94;
+      crop.rect = {x: (b.w - w) / 2, y: (b.h - h) / 2, w: w, h: h};
+    } else {
+      crop.rect = {x: b.w * 0.04, y: b.h * 0.04, w: b.w * 0.92, h: b.h * 0.92};
+    }
+    paint();
+  }
+  function paint() {
+    var b = imgBox();
+    var r = crop.rect;
+    r.w = Math.max(24, Math.min(r.w, b.w));
+    r.h = Math.max(24, Math.min(r.h, b.h));
+    r.x = Math.max(0, Math.min(r.x, b.w - r.w));
+    r.y = Math.max(0, Math.min(r.y, b.h - r.h));
+    var el = $('crop-rect');
+    el.style.left = r.x + 'px';
+    el.style.top = r.y + 'px';
+    el.style.width = r.w + 'px';
+    el.style.height = r.h + 'px';
+    var im = $('crop-img');
+    var s = im.naturalWidth / (b.w || 1);
+    $('crop-dims').textContent = Math.round(r.w * s) + ' × ' + Math.round(r.h * s)
+      + ' px from ' + crop.file;
+  }
+  function openCrop(file) {
+    crop.file = file;
+    crop.flip = false;
+    var box = state.slotBox[state.pickTarget];
+    crop.aspect = box ? box.w / box.h : 0;
+    $('crop-title').textContent = 'Frame the photo · ' + state.pickTarget;
+    $('crop-flip').classList.remove('on');
+    var im = $('crop-img');
+    im.style.transform = 'none';
+    im.onload = function () { drawAspects(); fitRect(); };
+    im.src = '/api/admin/media/' + encodeURIComponent(file);
+    drawAspects();
+    $('cropdlg').showModal();
+  }
+  function point(ev) {
+    var s = $('cropstage').getBoundingClientRect();
+    return {x: ev.clientX - s.left, y: ev.clientY - s.top};
+  }
+  $('crop-rect').addEventListener('pointerdown', function (ev) {
+    if (ev.target.id === 'crop-handle') return;
+    ev.preventDefault();
+    var p = point(ev);
+    crop.drag = {mode: 'move', dx: p.x - crop.rect.x, dy: p.y - crop.rect.y};
+    ev.target.setPointerCapture(ev.pointerId);
+  });
+  $('crop-handle').addEventListener('pointerdown', function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    crop.drag = {mode: 'resize'};
+    ev.target.setPointerCapture(ev.pointerId);
+  });
+  document.addEventListener('pointermove', function (ev) {
+    if (!crop.drag) return;
+    var p = point(ev);
+    if (crop.drag.mode === 'move') {
+      crop.rect.x = p.x - crop.drag.dx;
+      crop.rect.y = p.y - crop.drag.dy;
+    } else {
+      crop.rect.w = Math.max(24, p.x - crop.rect.x);
+      crop.rect.h = crop.aspect > 0 ? crop.rect.w / crop.aspect : Math.max(24, p.y - crop.rect.y);
+    }
+    paint();
+  });
+  document.addEventListener('pointerup', function () { crop.drag = null; });
 
-  // Shrink to 1600px on the longest side and re-encode as JPEG, in the browser —
-  // keeps uploads small and means the server needs no image library.
-  function shrink(src) {
+  $('crop-flip').addEventListener('click', function () {
+    crop.flip = !crop.flip;
+    $('crop-img').style.transform = crop.flip ? 'scaleX(-1)' : 'none';
+    $('crop-flip').classList.toggle('on', crop.flip);
+  });
+  $('crop-close').addEventListener('click', function () { $('cropdlg').close(); });
+  $('crop-full').addEventListener('click', function () { applyCrop(true); });
+  $('crop-apply').addEventListener('click', function () { applyCrop(false); });
+
+  /* Cut and shrink in the browser: the server needs no image library, and what is
+   * uploaded is exactly what the page will show. A PNG stays a PNG so a logo keeps
+   * its transparent background. */
+  function applyCrop(whole) {
+    var im = $('crop-img');
+    var box = imgBox();
+    var scale = im.naturalWidth / (box.w || 1);
+    var sx = 0;
+    var sy = 0;
+    var sw = im.naturalWidth;
+    var sh = im.naturalHeight;
+    if (!whole) {
+      sx = Math.round(crop.rect.x * scale);
+      sy = Math.round(crop.rect.y * scale);
+      sw = Math.round(crop.rect.w * scale);
+      sh = Math.round(crop.rect.h * scale);
+    }
+    var max = 1600;
+    var out = Math.min(1, max / Math.max(sw, sh));
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(sw * out));
+    c.height = Math.max(1, Math.round(sh * out));
+    var ctx = c.getContext('2d');
+    if (crop.flip) { ctx.translate(c.width, 0); ctx.scale(-1, 1); }
+    ctx.drawImage(im, sx, sy, sw, sh, 0, 0, c.width, c.height);
+
+    var png = /\.png$/i.test(crop.file);
+    var dataUrl = png ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85);
+    if (png && dataUrl.length > 5.5 * 1024 * 1024) dataUrl = c.toDataURL('image/jpeg', 0.85);
+
+    state.pendingSlots[state.pickTarget] = dataUrl;
+    var doc = frameDoc();
+    if (doc) {
+      doc.querySelectorAll('[data-slot="' + cssEscape(state.pickTarget) + '"]')
+        .forEach(function (el) { el.src = dataUrl; el.classList.add('ed-staged'); });
+      renderExtras(doc);
+    }
+    $('cropdlg').close();
+    toast('Photo staged for ' + state.pickTarget + ' — publish to make it live.');
+    updatePending();
+  }
+
+  // ----------------------------------------------------------- upload ---
+  $('upload-btn').addEventListener('click', function () { $('file-input').click(); });
+
+  $('file-input').addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    this.value = '';
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      shrink(reader.result, /\.png$/i.test(file.name)).then(function (dataUrl) {
+        api('/api/admin/media', {method: 'POST', body: {name: file.name, dataUrl: dataUrl}})
+          .then(function (r) {
+            if (r.body.error) return msg($('result'), r.body.error);
+            state.library.unshift({file: r.body.file});
+            renderLibrary();
+            toast('Added ' + r.body.file + ' to the photo library.');
+          });
+      }).catch(function (err) { msg($('result'), err.message); });
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Shrink to 1600px on the longest side before upload — keeps the repo sane.
+  function shrink(src, keepPng) {
     return new Promise(function (resolve, reject) {
       var img = new Image();
       img.onload = function () {
@@ -462,36 +1054,14 @@
         c.width = Math.round(img.width * scale);
         c.height = Math.round(img.height * scale);
         c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        resolve(c.toDataURL('image/jpeg', 0.85));
+        var url = keepPng ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85);
+        if (keepPng && url.length > 5.5 * 1024 * 1024) url = c.toDataURL('image/jpeg', 0.85);
+        resolve(url);
       };
       img.onerror = function () { reject(new Error('Could not read that image.')); };
       img.src = src;
     });
   }
-
-  // ----------------------------------------------------------- upload ---
-  $('upload-btn').addEventListener('click', function () {
-    state.uploadMode = 'library';
-    $('file-input').click();
-  });
-
-  $('file-input').addEventListener('change', function () {
-    var file = this.files && this.files[0];
-    this.value = '';
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function () {
-      shrink(reader.result).then(function (dataUrl) {
-        api('/api/admin/media', {method: 'POST', body: {name: file.name, dataUrl: dataUrl}})
-          .then(function (r) {
-            if (r.body.error) return msg($('result'), r.body.error);
-            state.library.unshift({file: r.body.file});
-            msg($('result'), 'Added ' + r.body.file + ' to the photo library.', 'ok');
-          });
-      }).catch(function (err) { msg($('result'), err.message); });
-    };
-    reader.readAsDataURL(file);
-  });
 
   // ------------------------------------------------------------- save ---
   function updatePending() {
@@ -500,11 +1070,34 @@
     var bits = [];
     if (t) bits.push(t + ' text change' + (t > 1 ? 's' : ''));
     if (s) bits.push(s + ' photo change' + (s > 1 ? 's' : ''));
-    $('pending').textContent = bits.length ? bits.join(' · ') : 'No changes yet';
+    $('pending').textContent = bits.length
+      ? bits.join(' · ') + ' — not live yet'
+      : 'No changes yet';
     $('publish').disabled = !bits.length;
+    $('discard').classList.toggle('hide', !bits.length);
   }
 
+  // an unpublished edit only lives in this tab — do not let it go quietly
+  window.addEventListener('beforeunload', function (ev) {
+    if (!Object.keys(state.dirtyText).length && !Object.keys(state.pendingSlots).length) return;
+    ev.preventDefault();
+    ev.returnValue = '';
+  });
+
+  $('discard').addEventListener('click', function () {
+    if (!window.confirm('Throw away every change you have not published yet?')) return;
+    state.dirtyText = {};
+    state.pendingSlots = {};
+    updatePending();
+    loadFrame();
+  });
+
   $('publish').addEventListener('click', function () {
+    var doc = frameDoc();
+    if (doc && doc.activeElement && doc.activeElement.hasAttribute
+        && doc.activeElement.hasAttribute('data-edit')) {
+      doc.activeElement.blur();                 // catch whatever is still being typed
+    }
     var texts = Object.keys(state.dirtyText).map(function (id) {
       return {id: id, html: state.dirtyText[id]};
     });
@@ -529,8 +1122,8 @@
         msg($('result'), lines.join('\n'), c.committed ? 'ok' : 'warn');
         state.dirtyText = {};
         state.pendingSlots = {};
-        loadContent();
         updatePending();
+        loadContent();          // reloads the preview from the files just written
       });
   });
 
@@ -543,13 +1136,6 @@
   var DAY_ORDER = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
   function bkMsg(text, kind) { msg($('bk-msg'), text, kind); }
-
-  function node(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text != null) n.textContent = text;
-    return n;
-  }
 
   function blockLabel(id) {
     var list = (bk.data && bk.data.settings.blocks) || [];
@@ -977,17 +1563,18 @@
   $('bk-tab-settings').addEventListener('click', function () { bkView('settings'); });
 
   // ------------------------------------------------------------- tabs ---
-  $('tab-text').addEventListener('click', function () { switchTab('text'); });
-  $('tab-images').addEventListener('click', function () { switchTab('images'); });
+  $('tab-site').addEventListener('click', function () { switchTab('site'); });
   $('tab-booking').addEventListener('click', function () { switchTab('booking'); });
   function switchTab(which) {
-    ['text', 'images', 'booking'].forEach(function (v) {
+    state.tab = which;
+    ['site', 'booking'].forEach(function (v) {
       $('tab-' + v).setAttribute('aria-selected', v === which);
       $('pane-' + v).classList.toggle('hide', v !== which);
     });
     // "Publish changes" is about site content only — bookings save as you go.
     document.querySelector('.savebar').classList.toggle('hide', which === 'booking');
     if (which === 'booking' && !bk.data) loadBooking();
+    if (which === 'site') fit();
   }
 
   boot();

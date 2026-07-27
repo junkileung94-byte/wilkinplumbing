@@ -91,6 +91,14 @@
     return null;
   }
 
+  /* The first day that can actually be booked. Not the same as data.firstDay, which is
+     only where the window opens — that day may be a Saturday, or already full. */
+  function firstOpenDay() {
+    var list = (state.data && state.data.days) || [];
+    for (var i = 0; i < list.length; i += 1) if (list[i].any) return list[i].date;
+    return null;
+  }
+
   function say(text, kind) {
     els.note.textContent = text || '';
     els.note.className = 'bk-note' + (text ? ' is-' + (kind || 'bad') : ' bk-hide');
@@ -158,6 +166,13 @@
     els.grid = el('div', 'bk-grid');
     cal.appendChild(els.grid);
 
+    /* Say when the first bookable day is. Roy's lead time means the calendar opens on a
+       month whose early days are already gone — without this the grid looks mostly shut
+       for no stated reason. */
+    var soonest = firstOpenDay();
+    if (soonest) {
+      cal.appendChild(el('p', 'bk-soonest', 'Earliest I can get to you: ' + prettyDate(soonest)));
+    }
     var key = el('p', 'bk-key', 'Greyed days are fully booked or a day off.');
     cal.appendChild(key);
     els.body.appendChild(cal);
@@ -243,13 +258,16 @@
     for (var d = 1; d <= total; d += 1) {
       var iso = isoOf(y, m, d);
       var day = dayByDate(iso);
+      /* Outside the booking window — already past, or beyond the horizon. These used to
+         render as greyed numbered buttons, which invite a click and then do nothing, so
+         the whole calendar reads as broken. Leave the cell empty instead. */
+      if (!day) {
+        els.grid.appendChild(el('span', 'bk-pad'));
+        continue;
+      }
       var btn = el('button', 'bk-day', String(d));
       btn.type = 'button';
-      if (!day) {
-        btn.className = 'bk-day is-out';
-        btn.disabled = true;
-        btn.setAttribute('aria-label', prettyDate(iso) + ' — not bookable');
-      } else if (!day.any) {
+      if (!day.any) {
         btn.className = 'bk-day is-off';
         btn.disabled = true;
         btn.setAttribute('aria-label', prettyDate(iso) + ' — fully booked or closed');

@@ -487,10 +487,10 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
 .bk-day:hover:not(:disabled){background:oklch(69.3% 0.206 43 / .14);border-color:var(--orange)}
 .bk-day.is-on{background:var(--orange);border-color:var(--orange);color:var(--navy);font-weight:700}
 .bk-day.is-off{background:oklch(94% 0.004 250);color:var(--muted);cursor:not-allowed;text-decoration:line-through}
-.bk-day.is-out{background:transparent;border-color:transparent;color:oklch(80% 0.01 258);cursor:default}
 .bk-day:focus-visible,.bk-opt:focus-visible,.bk-arrow:focus-visible,.bk-x:focus-visible{
   outline:3px solid var(--focus);outline-offset:2px}
-.bk-key{margin:10px 0 0;font-size:.8rem;color:var(--muted)}
+.bk-soonest{margin:12px 0 0;font-size:.86rem;font-weight:600;color:var(--navy)}
+.bk-key{margin:4px 0 0;font-size:.8rem;color:var(--muted)}
 
 /* ---- slot choice ---- */
 .bk-slots{margin-top:20px;padding-top:18px;border-top:1px solid var(--glass-border-lt)}

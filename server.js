@@ -198,26 +198,26 @@ async function applyEdits({ texts, slots }) {
   for (const item of Array.isArray(texts) ? texts : []) {
     if (!item || typeof item.id !== 'string') continue;
     const result = editor.setText(html, item.id, item.html);
-    if (!result.changed && result.html === html) {
+    if (!result.found) {
       problems.push(`No text node named "${item.id}" — skipped.`);
       continue;
     }
     html = result.html;
-    indexChanged = true;
+    if (result.changed) indexChanged = true;
   }
 
   for (const item of Array.isArray(slots) ? slots : []) {
     if (!item || typeof item.slot !== 'string') continue;
     const decoded = editor.decodeDataUrl(item.dataUrl);
     if (decoded.error) { problems.push(`${item.slot}: ${decoded.error}`); continue; }
-    const written = editor.writeSlotImage(item.slot, decoded.buf);
+    const written = editor.writeSlotImage(item.slot, decoded.buf, decoded.ext);
     const result = editor.setSlotSrc(html, item.slot, written.src);
-    if (!result.changed && result.html === html) {
+    if (!result.found) {
       problems.push(`No image slot named "${item.slot}" — skipped.`);
       continue;
     }
     html = result.html;
-    indexChanged = true;
+    if (result.changed) indexChanged = true;
     changedRepoPaths.add(written.repoPath);
     binaryRepoPaths.add(written.repoPath);
   }
@@ -344,10 +344,13 @@ async function handleAdmin(req, res, pathname) {
       res.writeHead(200, {
         ...adminHeaders,
         'Content-Type': 'text/html; charset=utf-8',
+        /* frame-src 'self': the editor previews the real site in an iframe and edits
+         * it in place, so the admin document has to be allowed to frame this origin.
+         * frame-ancestors 'none' still means nothing may frame the admin itself. */
         'Content-Security-Policy':
           "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; " +
-          "script-src 'unsafe-inline'; connect-src 'self'; form-action 'none'; " +
-          "base-uri 'none'; frame-ancestors 'none'",
+          "script-src 'unsafe-inline'; connect-src 'self'; frame-src 'self'; " +
+          "form-action 'none'; base-uri 'none'; frame-ancestors 'none'",
       });
       res.end(body);
     });
