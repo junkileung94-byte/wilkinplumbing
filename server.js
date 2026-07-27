@@ -350,9 +350,20 @@ async function handleAdmin(req, res, pathname) {
 
   if (pathname === '/api/admin/state' && req.method === 'GET') {
     const found = sessionOf(req);
+    /* Before an account exists there is nothing to protect yet, and the usual failure
+     * is a host that never passed the variables through. Say which of the two the app
+     * actually received at boot, and why they were rejected — names and reasons only,
+     * never a value. Once configured, this disappears. */
+    const envDiagnostic = auth.isConfigured() ? undefined : {
+      sawUser: !!String(process.env.ADMIN_USER || '').trim(),
+      sawPassword: !!String(process.env.ADMIN_PASSWORD || ''),
+      passwordLength: String(process.env.ADMIN_PASSWORD || '').length,
+      result: bootstrap.reason || (bootstrap.applied ? 'applied' : 'unknown'),
+    };
     return sendJson(res, 200, {
       configured: auth.isConfigured(),
       setupReady: auth.setupTokenConfigured(),
+      envLogin: envDiagnostic,
       authed: !!found,
       user: found ? found.session.user : null,
       csrf: found ? found.session.csrf : null,
