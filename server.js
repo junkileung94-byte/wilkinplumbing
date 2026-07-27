@@ -564,11 +564,21 @@ const server = http.createServer((req, res) => {
   return serveStatic(req, res);
 });
 
+/* ADMIN_USER / ADMIN_PASSWORD, if set, define the account outright — no setup screen,
+ * no setup token. Done before listen so the first request already sees the account. */
+const bootstrap = auth.bootstrapFromEnv();
+
 server.listen(PORT, HOST, () => {
   console.log(`Wilkin Plumbing site on http://${HOST}:${PORT}`);
+  if (bootstrap.applied) {
+    console.log(`  admin login  ${bootstrap.replaced ? 'updated' : 'created'} from `
+      + `ADMIN_USER/ADMIN_PASSWORD as "${bootstrap.user}"`);
+  } else if (bootstrap.reason && bootstrap.reason !== 'not-set' && bootstrap.reason !== 'already matches') {
+    console.log(`  admin login  ADMIN_USER/ADMIN_PASSWORD ignored: ${bootstrap.reason}`);
+  }
   console.log(`  admin        /admin  (${auth.isConfigured() ? 'account configured'
     : auth.setupTokenConfigured() ? 'awaiting first-run setup'
-      : 'SETUP LOCKED — set ADMIN_SETUP_TOKEN'})`);
+      : 'SETUP LOCKED — set ADMIN_SETUP_TOKEN, or ADMIN_USER + ADMIN_PASSWORD'})`);
   console.log(`  admin state  ${auth.STATE_DIR}`);
   console.log(`  bookings     ${booking.DIR} (never committed)`);
   const mail = mailer.status();

@@ -17,8 +17,19 @@ content/locations.json   per-municipality copy for the location pages
 
 `https://wilkinplumbing.ca/admin` — public URL, password protected.
 
-First visit shows a one-time setup screen: enter the **setup token**, pick a username and
-password, done. After that it is a normal login. Setup can only ever run once.
+Set `ADMIN_USER` and `ADMIN_PASSWORD` in the environment and there is **no setup screen at
+all** — you go straight to a login. That is the recommended way in.
+
+Those two are authoritative: change `ADMIN_PASSWORD`, restart, and the password has
+changed. That is also the password reset, and it means the account survives the host
+wiping the home directory. A password shorter than 12 characters is ignored with a line
+in the startup log rather than quietly accepted.
+
+Without them, first visit shows a one-time setup screen gated by `ADMIN_SETUP_TOKEN`
+instead. Either route ends at the same normal login; setup can only ever run once.
+
+If you have a shell on the server, `node tools/set-admin-password.js` creates or resets
+the account with no environment variable at all (`--force` to overwrite).
 
 **Why every save is a commit.** Hostinger redeploys the site from the GitHub repo, so a
 file written only on the server is erased by the next deploy. Each save therefore:
@@ -35,20 +46,27 @@ than pretending the edit is safe — the change is live but the next deploy will
 
 | Variable | Required | What it does |
 |---|---|---|
-| `ADMIN_SETUP_TOKEN` | **yes** | Gates the one-time setup screen. Minimum 16 characters, random. Without it setup refuses, so a scanner that finds `/admin` first still cannot claim the account. |
-| `GITHUB_TOKEN` | **yes** | Fine-grained PAT, **Contents: read and write**, scoped to this repo only. Lets saves persist. |
+| `ADMIN_USER` | **yes**\* | Admin username. With `ADMIN_PASSWORD`, skips the setup screen entirely. |
+| `ADMIN_PASSWORD` | **yes**\* | Admin password, minimum 12 characters. Authoritative — change it and restart to change the password. Ignored (with a log line) if too short. |
+| `ADMIN_SETUP_TOKEN` | no\* | The older way in: gates the one-time setup screen, minimum 16 characters. Not needed if `ADMIN_USER`/`ADMIN_PASSWORD` are set. |
+| `GITHUB_TOKEN` | no | Fine-grained PAT, **Contents: read and write**, scoped to this repo only. Only needed if you want admin content edits committed automatically — see below. |
 | `GITHUB_REPO` | no | `owner/name`. Defaults to `junkileung94-byte/wilkinplumbing`. |
 | `GITHUB_BRANCH` | no | Defaults to `main`. |
 | `ADMIN_STATE_DIR` | no | Where the username + password hash live. Defaults to `~/.wilkin-admin`. |
 | `ADMIN_COOKIE_SECURE` | no | Set to `1` if the session cookie arrives without the `Secure` flag — i.e. if the host's proxy does not send `x-forwarded-proto`. |
 
-**The repo is public — never put either token in a file.** They belong in Hostinger's
+\* One of `ADMIN_USER` + `ADMIN_PASSWORD`, or `ADMIN_SETUP_TOKEN`, has to be set — otherwise
+there is no way to create the account through the browser and `/admin` stays locked. That
+is on purpose: `/admin` is a public URL, so an ungated setup screen would let whoever
+found it first claim the site.
+
+**The repo is public — never put any of these in a file.** They belong in Hostinger's
 environment variables and nowhere else. The admin's own credentials are written to
 `ADMIN_STATE_DIR`, deliberately outside the repo, with `0600` permissions.
 
-If the host wipes the home directory on redeploy, the account disappears and the setup
-screen returns; you would set the account up again with the same token. Nothing is
-exposed by that — setup still requires the token.
+If the host wipes the home directory on redeploy, `ADMIN_USER`/`ADMIN_PASSWORD` simply
+recreate the account on the next boot. (With only `ADMIN_SETUP_TOKEN` set, the account
+disappears and the setup screen returns instead.)
 
 ## Security posture
 
@@ -62,8 +80,8 @@ exposed by that — setup still requires the token.
   stripped, simple inline formatting survives.
 - `/admin` is `noindex`, `Disallow`ed in robots.txt, and cannot be framed.
 
-Rotating the password today means deleting `~/.wilkin-admin/credentials.json` on the
-server and running setup again.
+Rotating the password: change `ADMIN_PASSWORD` and restart the app. Every live session is
+signed out. (With a shell, `node tools/set-admin-password.js --force` does the same.)
 
 ## Location pages
 
