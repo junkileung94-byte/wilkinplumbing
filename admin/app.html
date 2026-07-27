@@ -304,7 +304,10 @@
           el.classList.remove('hide');
           el.textContent = 'Setup is locked. The server has no ADMIN_SETUP_TOKEN set (or it is '
             + 'shorter than 16 characters). Add it in your Hostinger environment variables, '
-            + 'restart the app, then reload this page.';
+            + 'restart the app, then reload this page.\n\n'
+            + 'Or skip this screen: if you have a shell on the server, run '
+            + '`node tools/set-admin-password.js` in the site folder and it will create the '
+            + 'account directly. Then just sign in.';
         }
         return;
       }
