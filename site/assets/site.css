@@ -367,8 +367,12 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
 .stars svg{width:18px;height:18px;fill:var(--orange)}
 .rev-top .gmark{margin-left:auto;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.68);font-size:.82rem}
 .rev-top .gmark svg{width:20px;height:20px;flex:none}
-.rev-grid{columns:1;column-gap:14px}
-.rev{break-inside:avoid;-webkit-column-break-inside:avoid;margin:0 0 14px;padding:22px 24px;border-radius:var(--r-md);
+/* Grid, not multi-column. A backdrop-filter panel inside a `columns` container
+   paints outside its own column box in WebKit, so on Safari the glass of the
+   last review was landing on top of the pricing heading below. Grid fragments
+   nothing, so there is no column box to escape. */
+.rev-grid{display:grid;gap:14px;grid-template-columns:1fr;align-items:start}
+.rev{margin:0;padding:22px 24px;border-radius:var(--r-md);
   display:flex;flex-direction:column;gap:13px;
   transition:transform var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out)}
 .rev:hover{transform:translateY(-4px);border-color:var(--glass-border-lt)}
@@ -379,8 +383,8 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
 .rev .by b{color:var(--white);font-weight:600;font-family:var(--font-display);letter-spacing:.02em;text-transform:uppercase}
 .rev .by .g{width:16px;height:16px;flex:none}
 .rev-more{text-align:center;margin-top:12px}
-@media (min-width:640px){.rev-grid{columns:2}}
-@media (min-width:960px){.rev-grid{columns:3}}
+@media (min-width:640px){.rev-grid{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:960px){.rev-grid{grid-template-columns:repeat(3,1fr)}}
 
 /* ================= SERVICE AREAS ================= */
 .area-links{display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0;list-style:none}
