@@ -686,7 +686,14 @@ const bootstrap = auth.bootstrapFromEnv();
 
 server.listen(PORT, HOST, () => {
   console.log(`Wilkin Plumbing site on http://${HOST}:${PORT}`);
-  if (dotenv.loaded) console.log(`  .env         ${dotenv.keys.length} value(s): ${dotenv.keys.join(', ') || 'none new'}`);
+  // Name the file. A token that silently vanished with a redeploy is the failure this
+  // banner has to make obvious, and "7 value(s)" alone does not say which .env was read.
+  if (dotenv.loaded) {
+    console.log(`  .env         ${dotenv.keys.length} value(s): ${dotenv.keys.join(', ') || 'none new'}`);
+    for (const f of dotenv.files) console.log(`               ${f}`);
+  } else {
+    console.log(`  .env         none found: ${require('./lib/env').candidates().join(' , ')}`);
+  }
   if (bootstrap.applied) {
     console.log(`  admin login  ${bootstrap.replaced ? 'updated' : 'created'} from `
       + `ADMIN_USER/ADMIN_PASSWORD as "${bootstrap.user}"`);
