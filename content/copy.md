@@ -64,7 +64,7 @@ Form fields: Name · Email* · Contact Number · Date/Time Request · Send
 I can install a wide variety of plumbing fixtures, including sinks, toilets, showers, bathtubs, and much more. While I typically supply and install the fixtures myself, I'm also happy to work with customer-supplied items. Essentially, if it's plumbing-related, I can install it.
 
 **How much will it cost me?**
-Each call can vary depending on the issue and how complex it is to fix. My pricing is based on time and materials. There's a standard service call fee of $140 + tax, which covers the first hour at your property, with materials charged separately if needed. Some services and supplied items, like toilets and faucets, have set prices, but these are all based on the time and materials required to get the job done right.
+Each call can vary depending on the issue and how complex it is to fix. My pricing is based on time and materials. My hourly rate is $140 + tax, with the first hour at your property billed as a minimum charge and materials charged separately if needed. Some services and supplied items, like toilets and faucets, have set prices, but these are all based on the time and materials required to get the job done right.
 
 **Do you charge for estimates?**
 Most of my estimates are free, and I can often provide a quote just from photos you send me. For bigger projects, I'm happy to do a site visit at no cost, though these are usually scheduled at specific times during the week, so you might need to be flexible. If you need me to come at a time that's more convenient for you, I can do that too, but a small fee would apply.

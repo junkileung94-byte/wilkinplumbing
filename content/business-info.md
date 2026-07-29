@@ -13,7 +13,7 @@
 - **Email**: info@wilkinplumbing.ca
 - **Address**: 270 Kozlov St, Barrie, ON L4N 7H6, Canada
 - **Hours**: Daily 06:00 – 22:00 (6am–10pm)
-- **Service area**: Barrie, Orillia + local
+- **Service area**: Barrie & Simcoe County
 - **Website (current)**: wilkinplumbing.ca (GoDaddy) → to be replaced
 - **Socials**: none found (opportunity to add)
 
@@ -33,7 +33,7 @@
 8. **Plumbing Maintenance** — preventive upkeep to avoid costly repairs.
 
 ## Pricing (from FAQ)
-- Service call: **$140 + tax** (covers first hour on site); materials separate.
+- Hourly rate: **$140 + tax**. First hour on site is the minimum charge; extra time at the hourly rate, materials separate.
 - Time + materials basis; some items (toilets, faucets) have set prices.
 - **Estimates free** — often quoted from photos. Free site visits for bigger jobs (scheduled windows; convenience visits may carry a small fee).
 
