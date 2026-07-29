@@ -29,6 +29,7 @@ const editor = require('./lib/editor');
 const locations = require('./lib/locations');
 const github = require('./lib/github');
 const mailer = require('./lib/mailer');
+const templates = require('./lib/mail-templates');
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -276,6 +277,42 @@ function requestEmail(record, settings) {
   };
 }
 
+/* The receipt the customer gets, when they left an email address — it is an optional
+ * field, so plenty of requests won't have one.
+ *
+ * It deliberately says "request", never "confirmed": the slot is only held until Roy
+ * rings to agree it, and a mail that reads like a confirmation would have people
+ * waiting in for a visit that was never actually booked.
+ *
+ * Replies go to Roy's notification address rather than the SMTP_FROM mailbox, which is
+ * send-only and unattended. */
+function customerEmail(record, settings, reference, replyTo) {
+  const when = templates.whenOf(record, settings);
+  return {
+    subject: `We've got your request — ${when}`,
+    text: [
+      `Hi ${record.name.split(' ')[0] || record.name},`,
+      '',
+      'Thanks — your booking request is in. Nothing is confirmed just yet: I will call',
+      `you on ${record.phone} to agree the time, usually the same day.`,
+      '',
+      `Requested:  ${when}`,
+      `Address:    ${record.address}`,
+      `Reference:  ${reference}`,
+      '',
+      'What you told me about the job:',
+      record.job,
+      '',
+      'Need to change or cancel? Reply to this email, or call 705 888 2651.',
+      '',
+      'Roy',
+      'Wilkin Plumbing · 705 888 2651',
+      'https://wilkinplumbing.ca',
+    ].join('\n'),
+    replyTo: replyTo || undefined,
+  };
+}
+
 async function handleBooking(req, res, pathname) {
   const headers = { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' };
 
@@ -316,9 +353,24 @@ async function handleBooking(req, res, pathname) {
       }
     }
 
+    const reference = templates.referenceOf(result.record);
+
+    /* And a receipt to the customer, when they left an address — the field is optional.
+     * This one is plain text on purpose: it is an acknowledgement, not the booking. The
+     * branded email goes out later, when Roy actually confirms the slot. */
+    if (result.record.email) {
+      const ack = await mailer.send({
+        to: result.record.email,
+        ...customerEmail(result.record, result.settings, reference, to),
+      });
+      if (!ack.sent && ack.reason === 'error') {
+        console.error(`booking ${result.record.id}: customer receipt failed — ${ack.error}`);
+      }
+    }
+
     return sendJson(res, 200, {
       ok: true,
-      reference: result.record.id.replace('bk_', '').slice(0, 6).toUpperCase(),
+      reference,
       date: result.record.date,
       block: result.record.block,
     }, headers);
@@ -490,6 +542,7 @@ async function handleAdmin(req, res, pathname) {
       schedule: booking.schedule(21),
       summary: booking.summary(),
       mail: mailer.status(),
+      mailTokens: templates.TOKEN_HELP,
       today: booking.todayIso(),
     }, adminHeaders);
   }
@@ -500,12 +553,51 @@ async function handleAdmin(req, res, pathname) {
     return sendJson(res, 200, { ok: true, settings: booking.writeSettings(body) }, adminHeaders);
   }
 
+  /* Approving a request is what triggers the branded confirmation email, so the send
+   * lives here rather than in lib/booking.js — updateRequest stays a pure data write and
+   * the admin's own "new job" route below reuses it without sending twice. */
+  async function sendConfirmation(result) {
+    const record = result.record;
+    if (!record || record.status !== 'confirmed') return null;
+    if (result.previousStatus === 'confirmed') return null;   // only on the edge
+    if (!record.email) return { sent: false, reason: 'no-recipient' };
+    const settings = result.settings || booking.readSettings();
+    if (!settings.confirmEmail.enabled) return { sent: false, reason: 'disabled' };
+
+    const mail = await mailer.send({
+      to: record.email,
+      replyTo: notifyAddress(settings) || undefined,
+      ...templates.confirmation(record, settings),
+    });
+    if (!mail.sent && mail.reason === 'error') {
+      console.error(`booking ${record.id}: confirmation email failed — ${mail.error}`);
+    }
+    return mail;
+  }
+
   if (pathname === '/api/admin/booking/request' && req.method === 'POST') {
     if (!requireAuth(req, res)) return undefined;
     const body = await readBody(req);
     const result = booking.updateRequest(String(body.id || ''), body.patch || {});
     if (result.error) return sendJson(res, 400, result, adminHeaders);
-    return sendJson(res, 200, { ok: true, record: result.record }, adminHeaders);
+    // Fail-soft, like every other send here: the status change is already saved, so a
+    // dead mail server must not make the approval look like it failed.
+    const mail = await sendConfirmation(result);
+    return sendJson(res, 200, { ok: true, record: result.record, mail }, adminHeaders);
+  }
+
+  /* Roy previewing his own wording. Rendered by the same function that builds the real
+   * email, against a sample booking, so the preview cannot drift from what is sent.
+   * Takes the draft settings in the body so he can see edits before saving them. */
+  if (pathname === '/api/admin/booking/preview' && req.method === 'POST') {
+    if (!requireAuth(req, res)) return undefined;
+    const body = await readBody(req);
+    const draft = booking.previewSettings(body.settings || {});
+    return sendJson(res, 200, {
+      ok: true,
+      tokens: templates.TOKEN_HELP,
+      ...templates.samplePreview(draft),
+    }, adminHeaders);
   }
 
   if (pathname === '/api/admin/booking/new' && req.method === 'POST') {
@@ -517,7 +609,11 @@ async function handleAdmin(req, res, pathname) {
     const result = booking.createRequest(body, 'admin');
     if (result.error) return sendJson(res, 400, result, adminHeaders);
     const confirmed = booking.updateRequest(result.record.id, { status: 'confirmed' });
-    return sendJson(res, 200, { ok: true, record: confirmed.record || result.record }, adminHeaders);
+    // Roy took this one over the phone, so there is usually no email address — but if he
+    // typed one in, the customer should get the same confirmation as everybody else.
+    const mail = await sendConfirmation(confirmed);
+    return sendJson(res, 200,
+      { ok: true, record: confirmed.record || result.record, mail }, adminHeaders);
   }
 
   if (pathname === '/api/admin/booking/delete' && req.method === 'POST') {

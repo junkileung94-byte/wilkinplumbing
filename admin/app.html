@@ -116,6 +116,11 @@
   .crop-foot{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
   .dims{font-size:.8rem;color:var(--dim);font-variant-numeric:tabular-nums}
 
+  /* ---- the confirmation-email preview ---- */
+  #bk-mail{max-width:min(96vw,720px)}
+  #bk-mail iframe{width:100%;height:62vh;margin-top:12px;border:1px solid var(--line);
+                  border-radius:12px;background:#fff}
+
   /* ---- bookings ---- */
   .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:700;
         text-transform:uppercase;letter-spacing:.06em;vertical-align:middle}
@@ -366,6 +371,14 @@
     <div id="bk-new-msg"></div>
     <div class="row" style="margin-top:16px"><button type="submit">Add the job</button></div>
   </form>
+</dialog>
+
+<dialog id="bk-mail">
+  <div class="row spread"><h2 style="margin:0">The confirmation email</h2>
+    <button class="ghost small" id="bk-mail-close">Close</button></div>
+  <p class="muted" id="bk-mail-subject"></p>
+  <!-- sandboxed: this is rendered email, and it has no business running scripts. -->
+  <iframe id="bk-mail-frame" title="Preview of the confirmation email" sandbox=""></iframe>
 </dialog>
 
 <input type="file" id="file-input" accept="image/*" class="hide">
@@ -1137,6 +1150,24 @@
 
   function bkMsg(text, kind) { msg($('bk-msg'), text, kind); }
 
+  /* What to tell Roy about the confirmation email, in his words rather than the
+   * server's reason codes. Empty when there was nothing to send in the first place. */
+  function mailNote(mail) {
+    if (!mail) return '';
+    if (mail.sent) return 'The customer has been emailed.';
+    if (mail.reason === 'no-recipient') return 'They left no email address, so give them a ring.';
+    if (mail.reason === 'disabled') return 'The confirmation email is switched off.';
+    if (mail.reason === 'not-configured') return 'No mail server is set up, so nothing was sent.';
+    return 'The confirmation email did not send \u2014 ring them instead.';
+  }
+
+  function showMailPreview(data) {
+    $('bk-mail-subject').textContent = 'Subject: ' + data.subject;
+    $('bk-mail-frame').srcdoc = data.html;
+    $('bk-mail').showModal();
+  }
+  $('bk-mail-close').addEventListener('click', function () { $('bk-mail').close(); });
+
   function blockLabel(id) {
     var list = (bk.data && bk.data.settings.blocks) || [];
     for (var i = 0; i < list.length; i += 1) if (list[i].id === id) return list[i];
@@ -1230,7 +1261,11 @@
       api('/api/admin/booking/request', {method: 'POST', body: {id: r.id, patch: body}})
         .then(function (res) {
           if (res.body.error) return bkMsg(res.body.error);
-          bkMsg(okText, 'ok');
+          // Confirming is the one action that emails the customer. "Confirmed" on its own
+          // would leave Roy guessing whether they were actually told.
+          var note = mailNote(res.body.mail);
+          bkMsg(note ? okText + ' ' + note : okText,
+            res.body.mail && !res.body.mail.sent ? 'warn' : 'ok');
           loadBooking(true);
         });
     }
@@ -1489,31 +1524,100 @@
     words.appendChild(blurb);
     box.appendChild(words);
 
-    var saveRow = node('div', 'row');
-    saveRow.style.marginTop = '18px';
-    var save = node('button', null, 'Save booking settings');
-    save.addEventListener('click', function () {
+    // the confirmation email
+    var ce = s.confirmEmail || {};
+    var conf = node('div', 'field');
+    conf.appendChild(node('h3', null, 'The email sent when you confirm a booking'));
+    var confOn = document.createElement('input');
+    confOn.type = 'checkbox';
+    confOn.checked = ce.enabled !== false;
+    confOn.style.width = 'auto';
+    var confLabel = node('label', 'inline');
+    confLabel.style.textTransform = 'none';
+    confLabel.style.letterSpacing = '0';
+    confLabel.style.color = 'var(--ink)';
+    confLabel.style.margin = '0';
+    confLabel.appendChild(confOn);
+    confLabel.appendChild(node('span', null, 'Email the customer when I confirm their booking'));
+    conf.appendChild(confLabel);
+    conf.appendChild(node('p', 'muted', 'Only the words below are yours \u2014 the logo, the '
+      + 'colours and the table of details are fixed, so it always looks like Wilkin Plumbing. '
+      + 'Nothing is sent to a customer who left no email address.'));
+
+    conf.appendChild(node('label', null, 'Subject'));
+    var cSubject = document.createElement('input');
+    cSubject.value = ce.subject || '';
+    conf.appendChild(cSubject);
+
+    conf.appendChild(node('label', null, 'Opening'));
+    var cIntro = document.createElement('textarea');
+    cIntro.value = ce.intro || '';
+    conf.appendChild(cIntro);
+
+    conf.appendChild(node('label', null, 'Closing'));
+    var cClosing = document.createElement('textarea');
+    cClosing.value = ce.closing || '';
+    conf.appendChild(cClosing);
+
+    var tokens = (bk.data.mailTokens || []).map(function (t) { return '{{' + t + '}}'; });
+    if (tokens.length) {
+      conf.appendChild(node('p', 'muted', 'Type any of these and the booking fills them in: '
+        + tokens.join('  ') + '.'));
+    }
+
+    var previewRow = node('div', 'row');
+    previewRow.style.marginTop = '12px';
+    var preview = node('button', 'ghost small', 'Preview the email');
+    preview.addEventListener('click', function () {
+      preview.disabled = true;
+      api('/api/admin/booking/preview', {method: 'POST', body: {settings: draftSettings()}})
+        .then(function (res) {
+          preview.disabled = false;
+          if (res.body.error) return bkMsg(res.body.error);
+          showMailPreview(res.body);
+        });
+    });
+    previewRow.appendChild(preview);
+    previewRow.appendChild(node('span', 'muted',
+      'Shows your wording against a sample booking \u2014 saving first is not needed.'));
+    conf.appendChild(previewRow);
+    box.appendChild(conf);
+
+    /* One object, built once: Save posts it and Preview renders against it, so the
+     * preview can never show wording other than what saving would keep. */
+    function draftSettings() {
       var weeklyOut = {};
       DAY_ORDER.forEach(function (day) {
         weeklyOut[day] = s.blocks.filter(function (b) { return boxes[day][b.id].checked; })
           .map(function (b) { return b.id; });
       });
-      var blocksOut = s.blocks.map(function (b) {
-        return {id: b.id, label: timeInputs[b.id].label,
-                start: timeInputs[b.id].start.value, end: timeInputs[b.id].end.value};
-      });
-      save.disabled = true;
-      api('/api/admin/booking/settings', {method: 'POST', body: {
-        enabled: enabled.checked, weekly: weeklyOut, blocks: blocksOut,
+      return {
+        enabled: enabled.checked,
+        weekly: weeklyOut,
+        blocks: s.blocks.map(function (b) {
+          return {id: b.id, label: timeInputs[b.id].label,
+                  start: timeInputs[b.id].start.value, end: timeInputs[b.id].end.value};
+        }),
         leadTimeDays: Number(lead.value), horizonDays: Number(horizon.value),
         maxPerDay: Number(perDay.value), notifyEmail: notifyEmail.value,
         overlayTitle: title.value, overlayBlurb: blurb.value,
-      }}).then(function (res) {
-        save.disabled = false;
-        if (res.body.error) return bkMsg(res.body.error);
-        bkMsg('Saved. The website calendar updates straight away.', 'ok');
-        loadBooking(true);
-      });
+        confirmEmail: {enabled: confOn.checked, subject: cSubject.value,
+                       intro: cIntro.value, closing: cClosing.value},
+      };
+    }
+
+    var saveRow = node('div', 'row');
+    saveRow.style.marginTop = '18px';
+    var save = node('button', null, 'Save booking settings');
+    save.addEventListener('click', function () {
+      save.disabled = true;
+      api('/api/admin/booking/settings', {method: 'POST', body: draftSettings()})
+        .then(function (res) {
+          save.disabled = false;
+          if (res.body.error) return bkMsg(res.body.error);
+          bkMsg('Saved. The website calendar updates straight away.', 'ok');
+          loadBooking(true);
+        });
     });
     saveRow.appendChild(save);
     box.appendChild(saveRow);
