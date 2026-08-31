@@ -19,6 +19,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,700&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
 <link rel="stylesheet" href="/assets/site.css">
+<!-- Plausible, self-hosted and proxied same-origin through this site (lib/analytics.js).
+     No cookies and no personal data, so no consent banner is needed. -->
+<script defer data-domain="wilkinplumbing.ca" data-api="/api/event" src="/js/analytics.js"></script>
+<script>window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}</script>
 </head>
 <body class="field">
 
@@ -552,5 +556,13 @@
 
 <!-- Booking overlay: opened by any [data-book] button on this page. -->
 <script src="/assets/booking.js" defer></script>
+<script>
+/* Goal: Call Click. Delegated from the document so it covers all six phone links, the
+   sticky bar, and the eleven generated location pages without touching their markup. */
+document.addEventListener('click', function (ev) {
+  var a = ev.target.closest ? ev.target.closest('a[href^="tel:"]') : null;
+  if (a) window.plausible('Call Click', { props: { page: location.pathname } });
+});
+</script>
 </body>
 </html>

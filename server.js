@@ -28,6 +28,7 @@ const booking = require('./lib/booking');
 const editor = require('./lib/editor');
 const locations = require('./lib/locations');
 const github = require('./lib/github');
+const analytics = require('./lib/analytics');
 const mailer = require('./lib/mailer');
 const templates = require('./lib/mail-templates');
 
@@ -672,6 +673,11 @@ const server = http.createServer((req, res) => {
     return handleAdmin(req, res, pathname).catch(onError);
   }
 
+  // Analytics proxy — the tracker script and the event ingest, both same-origin.
+  if (analytics.handles(pathname)) {
+    return analytics.handle(req, res, pathname, clientIp(req)).catch(onError);
+  }
+
   // Public booking API — no session, so it is rate limited and honeypotted instead.
   if (pathname.startsWith('/api/booking')) {
     return handleBooking(req, res, pathname).catch(onError);
@@ -708,4 +714,5 @@ server.listen(PORT, HOST, () => {
   const mail = mailer.status();
   console.log(`  booking mail ${mail.configured ? `${mail.host}:${mail.port}` : `off — ${mail.reason}`}`);
   console.log(`  git push     ${github.enabled() ? 'enabled' : 'DISABLED — set GITHUB_TOKEN'}`);
+  console.log(`  analytics    ${process.env.PLAUSIBLE === '0' ? 'off (PLAUSIBLE=0)' : `${analytics.TRACKER} -> ${analytics.UPSTREAM}`}`);
 });

@@ -371,6 +371,8 @@
   }
 
   function done(result) {
+    // Goal: Booking Request — fired only once the server has accepted the request.
+    if (window.plausible) window.plausible('Booking Request');
     var block = blockById(result.block);
     els.title.textContent = 'Request sent';
     els.body.innerHTML = '';
