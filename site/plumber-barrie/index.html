@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,700&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/site.css?v=2">
 <!-- Plausible, self-hosted and proxied same-origin through this site (lib/analytics.js).
      No cookies and no personal data, so no consent banner is needed. -->
 <script defer data-domain="wilkinplumbing.ca" data-api="/api/event" src="/js/analytics.js"></script>
@@ -559,8 +559,13 @@
 })();
 </script>
 
-<!-- Booking overlay: opened by any [data-book] button on this page. -->
-<script src="/assets/booking.js" defer></script>
+<!-- Booking overlay: opened by any [data-book] button on this page.
+     ?v=2 busts a stale cached copy (Cache-Control: max-age=3600 below) after a deploy
+     that changes what /api/booking/availability sends back — an old booking.js reading
+     the new enquiry-mode response (days:[], firstDay:null) doesn't throw, but it does
+     render a dead calendar (NaN month label, zero day cells, form never reveals). Bump
+     this whenever booking.js's handling of that response changes. -->
+<script src="/assets/booking.js?v=2" defer></script>
 <script>
 /* Goal: Call Click. Delegated from the document so it covers all six phone links, the
    sticky bar, and the eleven generated location pages without touching their markup. */
