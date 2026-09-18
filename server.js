@@ -252,7 +252,29 @@ function notifyAddress(settings) {
   return (settings.notifyEmail || process.env.SMTP_TO || '').trim();
 }
 
-function requestEmail(record, settings) {
+function requestEmail(record, settings, reference) {
+  if (record.source === 'enquiry') {
+    return {
+      subject: `Enquiry — ${record.name}`,
+      text: [
+        'A new enquiry came in through the website.',
+        '',
+        `Name:     ${record.name}`,
+        `Phone:    ${record.phone}`,
+        record.email ? `Email:    ${record.email}` : null,
+        `Address:  ${record.address}`,
+        '',
+        'Job:',
+        record.job,
+        '',
+        '---',
+        `Reference: ${reference}`,
+        'https://wilkinplumbing.ca/admin',
+      ].filter((line) => line !== null).join('\n'),
+      replyTo: record.email || undefined,
+    };
+  }
+
   const block = settings.blocks.find((b) => b.id === record.block);
   const when = `${booking.prettyDate(record.date)} · `
     + `${block ? `${block.label} (${block.start}–${block.end})` : record.block}`;
@@ -288,6 +310,31 @@ function requestEmail(record, settings) {
  * Replies go to Roy's notification address rather than the SMTP_FROM mailbox, which is
  * send-only and unattended. */
 function customerEmail(record, settings, reference, replyTo) {
+  if (record.source === 'enquiry') {
+    return {
+      subject: "We've got your enquiry",
+      text: [
+        `Hi ${record.name.split(' ')[0] || record.name},`,
+        '',
+        'Thanks — your enquiry is in. I will get back to you on ' + record.phone
+          + ', usually the same day.',
+        '',
+        `Address:    ${record.address}`,
+        `Reference:  ${reference}`,
+        '',
+        'What you told me about the job:',
+        record.job,
+        '',
+        'Need to add anything? Reply to this email, or call 705 888 2651.',
+        '',
+        'Roy',
+        'Wilkin Plumbing · 705 888 2651',
+        'https://wilkinplumbing.ca',
+      ].join('\n'),
+      replyTo: replyTo || undefined,
+    };
+  }
+
   const when = templates.whenOf(record, settings);
   return {
     subject: `We've got your request — ${when}`,
@@ -343,18 +390,20 @@ async function handleBooking(req, res, pathname) {
         { error: result.error, stale: !!result.stale }, headers);
     }
 
+    const reference = templates.referenceOf(result.record);
+
     // Email is a courtesy on top of the admin inbox — the request is already saved,
     // so a mail failure must not fail the booking. Await it only so the outcome can
     // be logged; the customer's response never depends on it.
     const to = notifyAddress(result.settings);
     if (to) {
-      const mail = await mailer.send({ to, ...requestEmail(result.record, result.settings) });
+      const mail = await mailer.send({
+        to, ...requestEmail(result.record, result.settings, reference),
+      });
       if (!mail.sent && mail.reason === 'error') {
         console.error(`booking ${result.record.id}: email failed — ${mail.error}`);
       }
     }
-
-    const reference = templates.referenceOf(result.record);
 
     /* And a receipt to the customer, when they left an address — the field is optional.
      * This one is plain text on purpose: it is an acknowledgement, not the booking. The
@@ -561,6 +610,10 @@ async function handleAdmin(req, res, pathname) {
     const record = result.record;
     if (!record || record.status !== 'confirmed') return null;
     if (result.previousStatus === 'confirmed') return null;   // only on the edge
+    // No date means nothing was actually appointed — an enquiry that somehow reached
+    // "confirmed" without picking up a date/block first. The branded "Appointment
+    // confirmed" email would be flatly wrong here, so refuse to send it.
+    if (!record.date) return { sent: false, reason: 'no-date' };
     if (!record.email) return { sent: false, reason: 'no-recipient' };
     const settings = result.settings || booking.readSettings();
     if (!settings.confirmEmail.enabled) return { sent: false, reason: 'disabled' };

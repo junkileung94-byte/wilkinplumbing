@@ -445,6 +445,11 @@ body.content-in .nav-pill,body.content-in .hero-card{opacity:1;transform:none}
   font-family:var(--font-body);overflow:hidden;
   box-shadow:0 40px 90px -30px rgba(3,14,45,.6);
 }
+/* Enquiry mode (booking.js sets this when there is no calendar to show): the dialog
+   is just name/phone/email/address/job, so it does not need the full 560px the
+   7-column calendar was sized for. Falls back to the same narrow width as booking
+   mode below 380px, where every dialog is already at its floor. */
+.bk-dlg.bk-dlg-enq{width:min(440px,calc(100vw - 24px))}
 .bk-dlg::backdrop{background:rgba(4,12,32,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 .bk-head{
   display:flex;align-items:center;justify-content:space-between;gap:12px;

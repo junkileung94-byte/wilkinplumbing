@@ -36,7 +36,12 @@ commit. Reloading the preview keeps staged edits; "Discard changes" throws them 
 Anything carrying a marker that the preview does not show gets a plain editor beneath it,
 so nothing becomes unreachable.
 
-Bookings are a separate tab and save as you go — they never touch the repo.
+Bookings are a separate tab and save as you go — they never touch the repo. A `mode`
+setting at the top of Bookings → Settings switches the button on the site between
+"Send an enquiry" (name/phone/address/job, no calendar, nothing held — the default,
+for whenever there is no availability worth offering) and "Let customers pick a day
+and time" (the full calendar). The calendar/slot settings below it stay in place and
+editable either way; they just sit dormant while enquiry mode is selected.
 
 ## The admin
 

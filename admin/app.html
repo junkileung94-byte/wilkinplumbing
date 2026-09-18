@@ -128,6 +128,8 @@
   .pill.confirmed{background:rgba(67,192,122,.18);color:#a9edc6}
   .pill.done{background:rgba(255,255,255,.12);color:var(--dim)}
   .pill.declined,.pill.cancelled{background:rgba(255,107,107,.16);color:#ffb3b3}
+  .pill.enquiry{background:rgba(96,165,250,.18);color:#bcd7ff}
+  .field .hint{margin:0 0 0 26px;font-size:.82rem;color:var(--dim)}
   .badge{display:inline-block;min-width:18px;padding:1px 6px;margin-left:6px;border-radius:999px;
          background:var(--orange);color:#12203f;font-size:.72rem;font-weight:700;text-align:center}
   .job{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;
@@ -1155,6 +1157,7 @@
   function mailNote(mail) {
     if (!mail) return '';
     if (mail.sent) return 'The customer has been emailed.';
+    if (mail.reason === 'no-date') return 'That has no date, so nothing was sent.';
     if (mail.reason === 'no-recipient') return 'They left no email address, so give them a ring.';
     if (mail.reason === 'disabled') return 'The confirmation email is switched off.';
     if (mail.reason === 'not-configured') return 'No mail server is set up, so nothing was sent.';
@@ -1201,14 +1204,15 @@
     box.innerHTML = '';
     var list = bk.data.requests;
     if (!list.length) {
-      box.appendChild(node('p', 'muted', 'No booking requests yet. When someone uses the '
-        + 'booking button on the site, it will appear here.'));
+      box.appendChild(node('p', 'muted',
+        'When someone uses the button on the site, it will appear here.'));
       return;
     }
     list.forEach(function (r) { box.appendChild(requestCard(r)); });
   }
 
   function requestCard(r) {
+    var isEnquiry = r.source === 'enquiry';
     var b = blockLabel(r.block);
     var card = node('div', 'job' + (r.status === 'pending' ? ' is-pending' : ''));
 
@@ -1218,9 +1222,17 @@
     var pill = node('span', 'pill ' + r.status, r.status);
     pill.style.marginLeft = '8px';
     h.appendChild(pill);
+    if (isEnquiry) {
+      var epill = node('span', 'pill enquiry', 'Enquiry');
+      epill.style.marginLeft = '6px';
+      h.appendChild(epill);
+    }
     left.appendChild(h);
-    left.appendChild(node('div', 'when', prettyDay(r.date) + ' · ' + b.label
-      + (b.start ? ' (' + b.start + '–' + b.end + ')' : '')));
+    // An enquiry has no date or slot — nothing to show on this line.
+    if (!isEnquiry) {
+      left.appendChild(node('div', 'when', prettyDay(r.date) + ' · ' + b.label
+        + (b.start ? ' (' + b.start + '–' + b.end + ')' : '')));
+    }
     head.appendChild(left);
     if (r.source === 'admin') head.appendChild(node('span', 'muted', 'added by you'));
     card.appendChild(head);
@@ -1270,7 +1282,12 @@
         });
     }
 
-    if (r.status === 'pending') {
+    if (r.status === 'pending' && isEnquiry) {
+      // No date, so "Confirm" makes no sense — there is nothing to confirm and no
+      // appointment email to send. Done or Decline are the whole of it.
+      act('Mark done', false, function () { patch({status: 'done', notes: notes.value}, 'Marked done.'); });
+      act('Decline', true, function () { patch({status: 'declined', notes: notes.value}, 'Declined.'); });
+    } else if (r.status === 'pending') {
       act('Confirm', false, function () { patch({status: 'confirmed', notes: notes.value}, 'Confirmed — the slot stays held.'); });
       act('Decline', true, function () { patch({status: 'declined', notes: notes.value}, 'Declined — the slot is free again.'); });
     } else if (r.status === 'confirmed') {
@@ -1388,6 +1405,47 @@
     var s = bk.data.settings;
     box.innerHTML = '';
 
+    // mode: enquiry vs booking — the temporary switch Roy asked for. Lives at the
+    // very top of the pane because it changes what the rest of this screen means.
+    var modeField = node('div', 'field');
+    modeField.appendChild(node('h3', null, 'What the button on the site does'));
+    var modeRadios = {};
+    [
+      {value: 'enquiry', label: 'Send an enquiry (no dates)',
+        hint: 'People send their name, phone, address and the job. No calendar, '
+          + 'nothing held — good for when there is no availability to offer yet.'},
+      {value: 'booking', label: 'Let customers pick a day and time',
+        hint: 'The full calendar. A customer picks an open slot, which is held for '
+          + 'them until you confirm or decline it below.'},
+    ].forEach(function (opt) {
+      var lab = node('label', 'inline');
+      lab.style.textTransform = 'none';
+      lab.style.letterSpacing = '0';
+      lab.style.color = 'var(--ink)';
+      lab.style.margin = '10px 0 0';
+      lab.style.alignItems = 'flex-start';
+      var radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'bk-mode';
+      radio.value = opt.value;
+      radio.checked = s.mode === opt.value;
+      radio.style.width = 'auto';
+      radio.style.marginTop = '3px';
+      radio.addEventListener('change', function () {
+        calNote.classList.toggle('hide', currentMode() !== 'enquiry');
+      });
+      modeRadios[opt.value] = radio;
+      var textWrap = node('span');
+      textWrap.appendChild(node('span', null, opt.label));
+      textWrap.appendChild(node('p', 'hint', opt.hint));
+      lab.appendChild(radio);
+      lab.appendChild(textWrap);
+      modeField.appendChild(lab);
+    });
+    box.appendChild(modeField);
+
+    function currentMode() { return modeRadios.booking.checked ? 'booking' : 'enquiry'; }
+
     // on/off
     var onoff = node('div', 'field');
     var enabled = document.createElement('input');
@@ -1405,6 +1463,13 @@
     onoff.appendChild(node('p', 'muted', 'Turn this off and the booking button tells people '
       + 'to call instead. Your existing bookings are untouched.'));
     box.appendChild(onoff);
+
+    // A reminder that the calendar settings below are dormant while the site is
+    // asking for enquiries instead of dates — not removed, just not in effect.
+    var calNote = node('p', 'muted' + (s.mode === 'enquiry' ? '' : ' hide'));
+    calNote.textContent = 'These only apply when the button above is set to let '
+      + 'customers pick a day and time.';
+    box.appendChild(calNote);
 
     // weekly hours
     var weekly = node('div', 'field');
@@ -1511,14 +1576,25 @@
     notify.appendChild(testRow);
     box.appendChild(notify);
 
-    // overlay wording
+    // overlay wording — one pair of fields per mode, so switching modes never shows
+    // the other mode's wording by accident.
     var words = node('div', 'field');
-    words.appendChild(node('h3', null, 'What the booking box says'));
-    words.appendChild(node('label', null, 'Heading'));
+    words.appendChild(node('h3', null, 'What the box on the site says'));
+
+    words.appendChild(node('label', null, 'Heading — enquiry mode'));
+    var enqTitle = document.createElement('input');
+    enqTitle.value = s.enquiryTitle;
+    words.appendChild(enqTitle);
+    words.appendChild(node('label', null, 'Intro line — enquiry mode'));
+    var enqBlurb = document.createElement('textarea');
+    enqBlurb.value = s.enquiryBlurb;
+    words.appendChild(enqBlurb);
+
+    words.appendChild(node('label', null, 'Heading — booking mode'));
     var title = document.createElement('input');
     title.value = s.overlayTitle;
     words.appendChild(title);
-    words.appendChild(node('label', null, 'Intro line'));
+    words.appendChild(node('label', null, 'Intro line — booking mode'));
     var blurb = document.createElement('textarea');
     blurb.value = s.overlayBlurb;
     words.appendChild(blurb);
@@ -1593,6 +1669,7 @@
       });
       return {
         enabled: enabled.checked,
+        mode: currentMode(),
         weekly: weeklyOut,
         blocks: s.blocks.map(function (b) {
           return {id: b.id, label: timeInputs[b.id].label,
@@ -1601,6 +1678,7 @@
         leadTimeDays: Number(lead.value), horizonDays: Number(horizon.value),
         maxPerDay: Number(perDay.value), notifyEmail: notifyEmail.value,
         overlayTitle: title.value, overlayBlurb: blurb.value,
+        enquiryTitle: enqTitle.value, enquiryBlurb: enqBlurb.value,
         confirmEmail: {enabled: confOn.checked, subject: cSubject.value,
                        intro: cIntro.value, closing: cClosing.value},
       };

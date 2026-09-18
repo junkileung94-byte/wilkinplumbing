@@ -132,57 +132,62 @@
 
   function buildForm() {
     els.body.innerHTML = '';
+    var enquiry = state.data.mode === 'enquiry';
+    dlg.classList.toggle('bk-dlg-enq', enquiry);
 
     els.blurb = el('p', 'bk-blurb', state.data.blurb || '');
     els.body.appendChild(els.blurb);
 
-    // --- calendar
-    var cal = el('div', 'bk-cal');
-    var nav = el('div', 'bk-nav');
-    els.prev = el('button', 'bk-arrow');
-    els.prev.type = 'button';
-    els.prev.setAttribute('aria-label', 'Previous month');
-    els.prev.innerHTML = '&lsaquo;';
-    els.month = el('span', 'bk-month');
-    els.next = el('button', 'bk-arrow');
-    els.next.type = 'button';
-    els.next.setAttribute('aria-label', 'Next month');
-    els.next.innerHTML = '&rsaquo;';
-    els.prev.addEventListener('click', function () { stepMonth(-1); });
-    els.next.addEventListener('click', function () { stepMonth(1); });
-    nav.appendChild(els.prev);
-    nav.appendChild(els.month);
-    nav.appendChild(els.next);
-    cal.appendChild(nav);
+    if (!enquiry) {
+      // --- calendar
+      var cal = el('div', 'bk-cal');
+      var nav = el('div', 'bk-nav');
+      els.prev = el('button', 'bk-arrow');
+      els.prev.type = 'button';
+      els.prev.setAttribute('aria-label', 'Previous month');
+      els.prev.innerHTML = '&lsaquo;';
+      els.month = el('span', 'bk-month');
+      els.next = el('button', 'bk-arrow');
+      els.next.type = 'button';
+      els.next.setAttribute('aria-label', 'Next month');
+      els.next.innerHTML = '&rsaquo;';
+      els.prev.addEventListener('click', function () { stepMonth(-1); });
+      els.next.addEventListener('click', function () { stepMonth(1); });
+      nav.appendChild(els.prev);
+      nav.appendChild(els.month);
+      nav.appendChild(els.next);
+      cal.appendChild(nav);
 
-    var heads = el('div', 'bk-grid bk-grid-head');
-    DAY_LETTERS.forEach(function (d) {
-      var cell = el('span', 'bk-dow', d.slice(0, 1));
-      cell.setAttribute('aria-label', d);
-      heads.appendChild(cell);
-    });
-    cal.appendChild(heads);
+      var heads = el('div', 'bk-grid bk-grid-head');
+      DAY_LETTERS.forEach(function (d) {
+        var cell = el('span', 'bk-dow', d.slice(0, 1));
+        cell.setAttribute('aria-label', d);
+        heads.appendChild(cell);
+      });
+      cal.appendChild(heads);
 
-    els.grid = el('div', 'bk-grid');
-    cal.appendChild(els.grid);
+      els.grid = el('div', 'bk-grid');
+      cal.appendChild(els.grid);
 
-    /* Say when the first bookable day is. Roy's lead time means the calendar opens on a
-       month whose early days are already gone — without this the grid looks mostly shut
-       for no stated reason. */
-    var soonest = firstOpenDay();
-    if (soonest) {
-      cal.appendChild(el('p', 'bk-soonest', 'Earliest I can get to you: ' + prettyDate(soonest)));
+      /* Say when the first bookable day is. Roy's lead time means the calendar opens on a
+         month whose early days are already gone — without this the grid looks mostly shut
+         for no stated reason. */
+      var soonest = firstOpenDay();
+      if (soonest) {
+        cal.appendChild(el('p', 'bk-soonest', 'Earliest I can get to you: ' + prettyDate(soonest)));
+      }
+      var key = el('p', 'bk-key', 'Greyed days are fully booked or a day off.');
+      cal.appendChild(key);
+      els.body.appendChild(cal);
+
+      // --- slot choice
+      els.slots = el('div', 'bk-slots bk-hide');
+      els.body.appendChild(els.slots);
     }
-    var key = el('p', 'bk-key', 'Greyed days are fully booked or a day off.');
-    cal.appendChild(key);
-    els.body.appendChild(cal);
-
-    // --- slot choice
-    els.slots = el('div', 'bk-slots bk-hide');
-    els.body.appendChild(els.slots);
 
     // --- details
-    els.form = el('form', 'bk-form bk-hide');
+    // Enquiry mode has no slot to pick first, so the form shows straight away.
+    els.form = el('form', 'bk-form' + (enquiry ? '' : ' bk-hide'));
     els.form.noValidate = true;
 
     function field(name, label, type, required, autocomplete) {
@@ -222,15 +227,17 @@
     els.note = el('p', 'bk-note bk-hide');
     els.form.appendChild(els.note);
 
-    els.submit = el('button', 'btn btn-primary bk-send', 'Send request');
+    els.submit = el('button', 'btn btn-primary bk-send', enquiry ? 'Send enquiry' : 'Send request');
     els.submit.type = 'submit';
     els.form.appendChild(els.submit);
 
     els.form.addEventListener('submit', submit);
     els.body.appendChild(els.form);
 
-    state.month = monthKey(state.data.firstDay);
-    renderMonth();
+    if (!enquiry) {
+      state.month = monthKey(state.data.firstDay);
+      renderMonth();
+    }
   }
 
   // --------------------------------------------------------------- calendar ---
@@ -327,12 +334,15 @@
     ev.preventDefault();
     if (state.sending) return;
 
-    if (!state.date || !state.block) return say('Please choose a day and a time.');
+    var enquiry = state.data.mode === 'enquiry';
+    var sendLabel = enquiry ? 'Send enquiry' : 'Send request';
+
+    if (!enquiry && (!state.date || !state.block)) return say('Please choose a day and a time.');
     var payload = {
       name: els.name.value, phone: els.phone.value, email: els.email.value,
       address: els.address.value, job: els.job.value, company: els.company.value,
-      date: state.date, block: state.block,
     };
+    if (!enquiry) { payload.date = state.date; payload.block = state.block; }
     if (!payload.name.trim()) { els.name.focus(); return say('Please give me your name.'); }
     if (!payload.phone.trim()) { els.phone.focus(); return say('Please give a phone number.'); }
     if (!payload.address.trim()) { els.address.focus(); return say('Please give the address.'); }
@@ -353,7 +363,7 @@
     }).then(function (r) {
       state.sending = false;
       els.submit.disabled = false;
-      els.submit.textContent = 'Send request';
+      els.submit.textContent = sendLabel;
       if (r.status === 409 || (r.body && r.body.stale)) {
         // Someone got there first. Reload the calendar so they can see what's left.
         say(r.body.error || 'That slot has just gone. Please pick another.', 'bad');
@@ -365,23 +375,31 @@
     }).catch(function () {
       state.sending = false;
       els.submit.disabled = false;
-      els.submit.textContent = 'Send request';
+      els.submit.textContent = sendLabel;
       say('Could not reach the site. Please call ' + PHONE + '.');
     });
   }
 
   function done(result) {
-    // Goal: Booking Request — fired only once the server has accepted the request.
-    if (window.plausible) window.plausible('Booking Request');
-    var block = blockById(result.block);
-    els.title.textContent = 'Request sent';
+    var enquiry = state.data.mode === 'enquiry';
+    // Goal fired only once the server has accepted the request — 'Enquiry' in enquiry
+    // mode, 'Booking Request' in booking mode. See lib/analytics.js for both goals.
+    if (window.plausible) window.plausible(enquiry ? 'Enquiry' : 'Booking Request');
     els.body.innerHTML = '';
     var box = el('div', 'bk-done');
-    box.appendChild(el('h3', 'bk-sub', 'Thanks — I have your request.'));
-    box.appendChild(el('p', null, prettyDate(result.date)
-      + (block ? ' · ' + block.label + ', ' + slotTime(block) : '')));
-    box.appendChild(el('p', null, "I'll call you to confirm, usually the same day. "
-      + 'That slot is held for you until then.'));
+    if (enquiry) {
+      els.title.textContent = 'Enquiry sent';
+      box.appendChild(el('h3', 'bk-sub', 'Thanks — enquiry sent.'));
+      box.appendChild(el('p', null, "I'll get back to you, usually the same day."));
+    } else {
+      var block = blockById(result.block);
+      els.title.textContent = 'Request sent';
+      box.appendChild(el('h3', 'bk-sub', 'Thanks — I have your request.'));
+      box.appendChild(el('p', null, prettyDate(result.date)
+        + (block ? ' · ' + block.label + ', ' + slotTime(block) : '')));
+      box.appendChild(el('p', null, "I'll call you to confirm, usually the same day. "
+        + 'That slot is held for you until then.'));
+    }
     box.appendChild(el('p', 'bk-ref', 'Reference ' + result.reference));
     var call = el('a', 'btn btn-primary', 'Call ' + PHONE);
     call.href = 'tel:+17058882651';
@@ -415,7 +433,9 @@
           return closed('Online booking is closed at the moment — give me a ring and '
             + "we'll sort something out.");
         }
-        els.title.textContent = data.title || 'Request a booking';
+        var fallbackTitle = data.mode === 'enquiry' ? 'Send an enquiry' : 'Request a booking';
+        els.title.textContent = data.title || fallbackTitle;
+        dlg.setAttribute('aria-label', data.title || fallbackTitle);
         var hadDate = keepOpenSlot ? state.date : null;
         state.date = null;
         state.block = null;
