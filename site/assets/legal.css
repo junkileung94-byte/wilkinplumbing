@@ -1,0 +1,39 @@
+/* Legal pages (SMS Terms, Privacy Policy). Loaded only by those two pages, after site.css.
+ * Same field, nav and footer as the home page; the text sits on a solid paper panel so long
+ * legal copy stays easy to read on a phone. Tokens come from site.css. */
+.legal-main{padding:clamp(100px,22vw,140px) 0 clamp(48px,10vw,96px)}
+.legal{
+  max-width:760px;margin:0 auto;
+  background:var(--paper);color:var(--ink);
+  border-radius:var(--r-lg);
+  padding:clamp(24px,6vw,56px) clamp(20px,6vw,56px);
+  box-shadow:var(--shadow-glass);
+}
+.legal h1{
+  color:var(--navy);
+  font-size:clamp(2.1rem,9vw,3.4rem);
+  line-height:1;
+  padding-bottom:.35em;margin-bottom:.6em;
+  border-bottom:3px solid var(--orange);
+}
+.legal h2{
+  color:var(--navy);
+  font-size:clamp(1.3rem,5.2vw,1.65rem);
+  line-height:1.1;
+  margin:1.7em 0 .45em;
+}
+.legal h1 + h2{margin-top:0}
+.legal p,.legal li{font-size:1.0625rem;line-height:1.65;max-width:68ch;margin:0 0 .9em}
+.legal ul{margin:0 0 1em;padding-left:1.25em}
+.legal li{margin-bottom:.4em}
+.legal li::marker{color:var(--orange-600)}
+.legal a{
+  color:var(--navy);font-weight:600;
+  text-decoration:underline;text-decoration-color:var(--orange);
+  text-decoration-thickness:2px;text-underline-offset:3px;
+  overflow-wrap:anywhere;
+}
+.legal a:hover{color:var(--orange-600)}
+.legal a:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+.legal-back{margin-top:2em !important;padding-top:1.2em;border-top:1px solid oklch(86% 0.008 250)}
+.legal-back a{display:inline-block;padding:.5em 0;min-height:44px}
